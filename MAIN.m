@@ -5,7 +5,7 @@ clc;clear;     set(0,'defaultAxesFontSize',20);       set(0,'DefaultLineMarkerSi
 DS = com.mathworks.mde.desk.MLDesktop.getInstance();  DS.closeGroup('Variables');  
 
 %% Setting the scene
-Dir.fullpath     = 'P:\Abdo\GitHub\DIC2ABAQUS\Calibration'; % filr Directory
+Dir.fullpath     = pwd; % filr Directory
 Dir.fillname     = '12MPa_mm';       % DONT include extension,in .mat or .dat format
 Dir.input_unit   = 'mm';        % meter (m) or milmeter (mm) or micrometer(um);
 Operation        = 'DIC';       % calculation mode\n Str = Strain, xED = xEBSD, DIC for Displacement
