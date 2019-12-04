@@ -34,7 +34,7 @@ datum = reshapeData(datum);
 close all;      
 if      mechDat.type  == 'A';       fig=subplot(1,1,1); 
 % imagesc(datum.X(1,:),datum.Y(:,1),real(log10(mechDat.Maps.GND)));   set(gca,'CLim',[14 15.5]); 
-imagesc(datum.X(1,:),datum.Y(:,1),mechDat.Maps.S22);                set(gca,'CLim',[-1.5 1.5]); 
+imagesc(datum.X(1,:),datum.Y(:,1),mechDat.Maps.S11);                set(gca,'CLim',[-1.5 1.5]); 
 fig.XDir='reverse';             fig.YDir='reverse';                 c = colorbar; 	
         c.Label.String = '\rho_G_N_D_s [log10(m/m^{3}])';
 else;   imagesc(datum.X(1,:),datum.Y(:,1),datum.Uy); 
@@ -67,13 +67,13 @@ title('U_Y :: Select the Crack mask, start from crack tip');
 [xm,ym] = ginput(2);
 
 %% get excat from data in
-xLin     = datum.X(1,:);
+xLin       = datum.X(1,:);
 [~, index] = min(abs(xLin-xo(1)));      xo(1) = xLin(index);
 [~, index] = min(abs(xLin-xo(2)));      xo(2) = xLin(index);
 [~, index] = min(abs(xLin-xm(1)));      xm(1) = xLin(index);
 [~, index] = min(abs(xLin-xm(2)));      xm(2) = xLin(index);
 
-yLin     = datum.Y(:,1);
+yLin       = datum.Y(:,1);
 [~, index] = min(abs(yLin-yo(1)));      yo(1) = yLin(index);
 [~, index] = min(abs(yLin-yo(2)));      yo(2) = yLin(index);
 [~, index] = min(abs(yLin-ym(1)));      ym(1) = yLin(index);    msk.ds1 = index;
@@ -124,5 +124,5 @@ writetable(alldata, SaveD, 'Delimiter',' '); clc
 end
 
 %% writing up
-DataFile = Print4OUROMA(mechDat, msk,SaveD,min(size(datum.X)));
+DataFile = PrintCode(mechDat, msk,SaveD,min(size(datum.X)));
 % Out = importdata('P:\Abdo\ABAQUS\test.txt'); % output file 

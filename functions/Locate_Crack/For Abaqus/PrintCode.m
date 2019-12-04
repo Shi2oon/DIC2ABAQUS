@@ -1,4 +1,4 @@
-function [folder ] = Print4OUROMA(MatP, maskdim,SaveD,len)
+function [folder ] = PrintCode(MatP, maskdim,SaveD,len)
 [folder,~,~] = fileparts(SaveD);
 folder = [folder '\Abaqus Output'];     mkdir(folder);
 fileid = fullfile(folder, 'Abaqus_script.py');

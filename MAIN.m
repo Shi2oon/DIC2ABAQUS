@@ -11,6 +11,7 @@ Dir.input_unit   = 'mm';        % meter (m) or milmeter (mm) or micrometer(um);
 Dir.pixel_size   = 1;           % if DIC values are in pixel, 1 if in physical units;
 Operation        = 'DIC';       % calculation mode\n Str = Strain, xED = xEBSD, DIC for Displacement
 Dir.unique       = 'Synthetic_Data_12MPa';   % uniqe name for data set, can be = Dir.fillname;
+
 %% INPUT MATERIAL PROPERTIES AND DATA
 % Poisson's ratio,          Young's Modulus [Pa],      		Material Name     
   Dir.nu    = 0.3;          Dir.E  = 210E9;                 Dir.Mat = 'Ferrite';
