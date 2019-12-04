@@ -11,27 +11,41 @@ if Operation == 'DIC'
         filed = [DataFile '.mat'];
         datum = load(filed);               datum = datum.alldata;
     end
+    switch mechDat.input_unit
+        case 'mm'
+            % convert mm --> m
+            datum = datum.* (mechDat.pixel_size * 10^-3); 
+        case 'um'
+            % convert um --> m
+            datum = datum.* (mechDat.pixel_size * 10^-6); % convert pixels --> m
+        case 'm'
+            datum = datum.* (mechDat.pixel_size); 
+        otherwise
+            error('Invalid input_unit')
+    end
+    mechDat.input_unit = 'm';
     DataFile = fileparts(DataFile);
 end
 %% Units + 
-if     mechDat.input_unit == 'mm';    fac = 1e-3;               % conver to m
-elseif mechDat.input_unit == 'um';    fac = 1e-6;       end     % conver to m
-% and for some reason Abaqus is really bad in handling small dim.
-if      mean(abs(datum(:,1)))<1e-2;	  saf = 1e-3;	
-elseif  mean(abs(datum(:,1)))<1e-5;   saf = 1e-6;    
-else;   saf = 1;                                        end
+[datum,mechDat.input_unit, saf] = unist4Abaqus(datum,mechDat.input_unit);
 
-%%
-datum = datum./ saf;      
+%%   
 datum = reshapeData(datum);
-close all;      imagesc(datum.X(1,:),datum.Y(:,1),datum.Uy);    
-c=colorbar;       set(gca,'Ydir','normal');           axis image;
+close all;      
+if      mechDat.type  == 'A';       fig=subplot(1,1,1); 
+% imagesc(datum.X(1,:),datum.Y(:,1),real(log10(mechDat.Maps.GND)));   set(gca,'CLim',[14 15.5]); 
+imagesc(datum.X(1,:),datum.Y(:,1),mechDat.Maps.S22);                set(gca,'CLim',[-1.5 1.5]); 
+fig.XDir='reverse';             fig.YDir='reverse';                 c = colorbar; 	
+        c.Label.String = '\rho_G_N_D_s [log10(m/m^{3}])';
+else;   imagesc(datum.X(1,:),datum.Y(:,1),datum.Uy); 
+        c=colorbar; c.Label.String = ['U_Y [' mechDat.input_unit ']'];     
+end  
+set(gca,'Ydir','normal');	axis image;
 title('Answer in the command line');
-xlabel('X [m]','FontSize',20,'FontName','Times New Roman');          
-ylabel('Y [m]','FontSize',20,'FontName','Times New Roman');
-c.Label.String = ['U_Y [' mechDat.input_unit ']'];
+xlabel(['X [' mechDat.input_unit ' ]'],'FontSize',20,'FontName','Times New Roman');          
+ylabel(['Y [' mechDat.input_unit ' ]'],'FontSize',20,'FontName','Times New Roman');
+
 set(gcf,'position',[30 50 1300 950]); 
-saf = saf*fac;
 
 %% Crop and rotate
 [datum] = Crack_align(datum); % rotate data
@@ -64,7 +78,6 @@ yLin     = datum.Y(:,1);
 [~, index] = min(abs(yLin-yo(2)));      yo(2) = yLin(index);
 [~, index] = min(abs(yLin-ym(1)));      ym(1) = yLin(index);    msk.ds1 = index;
 [~, index] = min(abs(yLin-ym(2)));      ym(2) = yLin(index);    msk.ds2 = index;
-
 
 %% adjust to min and max
 if xo(2)<=min(datum.X(1,:)) || abs(xo(2)-min(datum.X(1,:)))<abs(xo(2)-max(datum.X(1,:)))
@@ -111,5 +124,5 @@ writetable(alldata, SaveD, 'Delimiter',' '); clc
 end
 
 %% writing up
-Print4OUROMA(mechDat, msk,SaveD,min(size(datum.X)))
+DataFile = Print4OUROMA(mechDat, msk,SaveD,min(size(datum.X)));
 % Out = importdata('P:\Abdo\ABAQUS\test.txt'); % output file 

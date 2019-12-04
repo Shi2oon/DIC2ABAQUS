@@ -4,12 +4,13 @@ mesh.operation     = 'Norm'; % for origiinal data and ''West' for correction dat
 
 if mesh.Operation == 'xED'
     %% HR-EBSD data% E strain  S stress  A Deformation 
-    [dataIn.Maps,alldata]   = GetGrainData(fullfile(scan_dir,[scan_ID '.mat'])); 
+    [dataIn.Maps,alldata]   = GetGrainData(fullfile(scan_dir,[scan_ID '.mat']),dataIn.unique); 
     dataIn.results     = dataIn.Maps.SavingD;
     input_unit         = dataIn.Maps.units.xy ;
     mesh.OpS           = 'xED';
     mesh.Operation     = 'Str';
-    dataIn.type         = 'A'; 
+    dataIn.type        = 'A'; 
+    dataIn.nu = dataIn.Maps.nu;     dataIn.E = dataIn.Maps.E;
     
 else
     try

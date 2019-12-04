@@ -7,15 +7,17 @@ close all
 
 %% plotting
 close all
-subplot(1,2,2); imagesc(gl.Ux(1,:),gl.Uy(:,1),gl.dy); 
+h1=subplot(1,2,2); imagesc(gl.Ux(1,:),gl.Uy(:,1),gl.dy); 
 title('Integrated U_Y');    colorbar; C = caxis; colormap jet
 set(gca,'Ydir','normal');           axis image; 
+% h1.XDir='reverse';                  h1.YDir='reverse';
 xlabel('X[m]','FontSize',20,'FontName','Times New Roman');          
 ylabel('Y[m]','FontSize',20,'FontName','Times New Roman');
 
-subplot(1,2,1); imagesc(gl.Ux(1,:),gl.Uy(:,1),gl.dx); 
+h2=subplot(1,2,1); imagesc(gl.Ux(1,:),gl.Uy(:,1),gl.dx); 
 title('Integrated U_X');    colorbar; caxis(C);
 set(gca,'Ydir','normal');           axis image; 
+% h2.XDir='reverse';                  h2.YDir='reverse';
 xlabel('X[m]','FontSize',20,'FontName','Times New Roman');          
 ylabel('Y[m]','FontSize',20,'FontName','Times New Roman'); 
 set(gcf,'position',[30 50 1300 950]);   
