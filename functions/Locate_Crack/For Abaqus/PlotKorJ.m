@@ -1,4 +1,4 @@
-function [J,Keff,KI,KII]=PlotKorJ(saveto,E,offset)
+function [J,Keff,KI,KII]=PlotKorJ(saveto,E,offset,byCode)
 % fole ris the folder where all the data is vaed
 % E is the elasric modulus or the stifness tensor in Pa
 % offset: is when abaqus consider your data in meters or standard SI units 
@@ -6,16 +6,27 @@ function [J,Keff,KI,KII]=PlotKorJ(saveto,E,offset)
 % in Km (offset = 1e-3) and so on
 
 %% input values
-dataum = importdata(fullfile(saveto, 'KJ_Output.txt'));
 if size(E) ~=1      % elastic modulus in Pa
 E11 = E(1,1);  E12 = E(1,2);  nu = E12/(E11+ E12);  E = E11*(1-2*nu)*(1+nu)/(1-nu);
 end
-J   = dataum.data(1,:)*offset;
-KI  = abs(dataum.data(2,:)*sqrt(offset)*1e-6);
-KII = abs(dataum.data(3,:)*sqrt(offset)*1e-6);
 
+if byCode == 'Y' % if the processing went through without proplems
+    dir
+    dataum = importdata(fullfile(saveto, 'KJ_Output.txt'));
+    J   = dataum.data(1,:)*offset*1e-3;
+    KI  = abs(dataum.data(2,:)*sqrt(offset)*1e-6);
+    KII = abs(dataum.data(3,:)*sqrt(offset)*1e-6);
+    Keff= sqrt(abs(J)*E)*1e-6;
+elseif byCode == 'N' % if there was a proplem and done alone
+    filrname = dir(fullfile(saveto,'/*.dat'));
+    [J,KI, KII, JK] = readDATAbaqus(fullfile(saveto,filrname.name));
+    J   = J*offset*1e-3;
+    KI  = KI*sqrt(offset)*1e-6;
+    KII = KII*sqrt(offset)*1e-6;
+    Keff= sqrt(abs(JK*offset)*E)*1e-6;
+end
+    
 %% the Plot
-Keff      = sqrt(abs(J)*E)*1e-6;
 contrs = length(J);                     contrs = contrs - round(contrs/4);
 Jtrue  = ((mean(J(contrs:end))+max(J(contrs:end)))/2);
 Jdiv   = std(J(contrs:end));
@@ -29,10 +40,10 @@ title ({['Stress Intensity Factor (K_{eff}) = ' num2str(round(Ktrue,2)) ' ± ' ..
     num2str(round(Kdiv,3)) ' MPa\surdm' ];''});
 saveas(gcf, [saveto '\K.fig']); saveas(gcf, [saveto '\K.png']); close all
 
-plot(J*1e-3,'r--o','MarkerEdgeColor','r','LineWidth',1.5,'MarkerFaceColor','r');
+plot(J,'r--o','MarkerEdgeColor','r','LineWidth',1.5,'MarkerFaceColor','r');
 set(gcf,'position',[600,100,950,650])
 xlabel('Contour Number');       ylabel('J (KJ/m^2)')
-title ({['J-integral = ' num2str(round(Jtrue.*1e-3,2)) ' ± ' ...
+title ({['J-integral = ' num2str(round(Jtrue,2)) ' ± ' ...
     num2str(round(Jdiv*1e-3,4)) ' KJ/m^2' ];''});
 saveas(gcf, [saveto '\J.fig']);     saveas(gcf, [saveto '\J.png']); close all
 
