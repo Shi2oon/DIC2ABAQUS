@@ -46,7 +46,7 @@ end
 [DATA,Dir.Abaqus,UnitOffset] = Locate_Crack(alldata,Dir.results,Operation,Dir); 
 
 %% Once Abaqus analysis are done
-% [Abaqus.J,Abaqus.Keff,Abaqus.KI,Abaqus.KII] = PlotKorJ(Dir.Abaqus,Dir.E,UnitOffset);
+% [Abaqus.J,Abaqus.Keff,Abaqus.KI,Abaqus.KII] = PlotKorJ(Dir.Abaqus,Dir.E,UnitOffset,'N');
 % Abaqus.Stress_Maps = readAbaqusOutput(Dir.Abaqus,Dir.unique);
 % imagesc(Abaqus.Stress_Maps.X(1,:),Abaqus.Stress_Maps.Y(:,1),Abaqus.Stress_Maps.S12); axis image
 % save([Dir.Abaqus '\AbaqusOutput.mat'],'Abaqus','Dir');
