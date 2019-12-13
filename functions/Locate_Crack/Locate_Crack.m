@@ -1,4 +1,5 @@
-function [alldata,DataFile,saf] = Locate_Crack(datum,DataFile,Operation,mechDat)
+function [datum,saf,mechDat, msk,SaveD] = ...
+        Locate_Crack(datum,DataFile,Operation,mechDat)
 % a function to take a dic file and then give the user the librity to
 % define the crack tip and mask which will be used in ababqus code
 
@@ -32,22 +33,19 @@ end
 %%   
 datum = reshapeData(datum);
 close all;      
-if      mechDat.type  == 'A';       fig=subplot(1,1,1); 
-% imagesc(datum.X(1,:),datum.Y(:,1),real(log10(mechDat.Maps.GND)));   set(gca,'CLim',[14 15.5]); 
-imagesc(datum.X(1,:),datum.Y(:,1),mechDat.Maps.S11);                set(gca,'CLim',[-1.5 1.5]); 
-fig.XDir='reverse';             fig.YDir='reverse';                 c = colorbar; 	
-        c.Label.String = '\rho_G_N_D_s [log10(m/m^{3}])';
-else;   imagesc(datum.X(1,:),datum.Y(:,1),datum.Uy); 
-        c=colorbar; c.Label.String = ['U_Y [' mechDat.input_unit ']'];     
-end  
+imagesc(datum.X(1,:),datum.Y(:,1),datum.Uy); 
+c=colorbar; c.Label.String = ['U_Y [' mechDat.input_unit ']'];     
 set(gca,'Ydir','normal');	axis image;
 title('Answer in the command line');
 xlabel(['X [' mechDat.input_unit ' ]'],'FontSize',20,'FontName','Times New Roman');          
 ylabel(['Y [' mechDat.input_unit ' ]'],'FontSize',20,'FontName','Times New Roman');
-
 set(gcf,'position',[30 50 1300 950]); 
 
 %% Crop and rotate
+if Operation == 'xED'
+    xo = mechDat.xo;        yo = mechDat.yo;
+    xm = mechDat.xm;        ym = mechDat.ym;
+else
 [datum] = Crack_align(datum); % rotate data
     opts.Interpreter = 'tex'; % Include the desired Default answer
     opts.Default     = 'N';     % Use the TeX interpreter to format the question
@@ -65,6 +63,7 @@ title('U_Y :: Select the crack tip start from crack tip');
 [xo,yo] = ginput(2);
 title('U_Y :: Select the Crack mask, start from crack tip');
 [xm,ym] = ginput(2);
+end
 
 %% get excat from data in
 xLin       = datum.X(1,:);
@@ -107,7 +106,7 @@ title({'Crack Position (x,y) from tip to the end is at ',[ num2str(xo(1)) ' , ' 
 %        num2str(xm(1)) ' , ' num2str(ym(1))], ['Picture Frame is at ' ...
 %        num2str(min(datum.X(1,:))) ' , ' num2str(min(datum.Y(:,1))) ' and ' ...
 %        num2str(max(datum.X(1,:))) ' , ' num2str(max(datum.Y(:,1)))],'']);
-saveas(gcf, [DataFile '\DIC2ABAQUS Coodrinate.png']); 
+saveas(gcf, [DataFile '\DIC2ABAQUS Coodrinate.png']); close all
 msk.xo = xo;      msk.yo = yo;      msk.xm = xm;      msk.ym = ym;
 
 %% save cropped data
@@ -122,7 +121,3 @@ alldata = table(datum.X(:), datum.Y(:), datum.Ux(:), datum.Uy(:), 'VariableNames
     SaveD = [DataFile '\Data Uxy.dat'];
 writetable(alldata, SaveD, 'Delimiter',' '); clc
 end
-
-%% writing up
-DataFile = PrintCode(mechDat, msk,SaveD,min(size(datum.X)));
-% Out = importdata('P:\Abdo\ABAQUS\test.txt'); % output file 

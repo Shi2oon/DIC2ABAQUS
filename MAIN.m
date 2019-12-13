@@ -3,7 +3,7 @@
 close all;     restoredefaultpath; warning off;       addpath(genpath(pwd));              
 clc;clear;     set(0,'defaultAxesFontSize',20);       set(0,'DefaultLineMarkerSize',12)   
 DS = com.mathworks.mde.desk.MLDesktop.getInstance();  DS.closeGroup('Variables');  
-
+toc;
 %% Setting the scene
 Dir.fullpath     = pwd; % filr Directory
 Dir.fillname     = '12MPa_mm';       % DONT include extension,in .mat or .dat format
@@ -21,32 +21,17 @@ Dir.unique       = 'Synthetic_Data_12MPa';   % uniqe name for data set, can be =
 % if 'Elastic-Anisotropic' you need to define the stifness tensor Dir.Stifness
   
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END of USER INTERFACE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
-%% Load, MESHING, Integration
-if Operation ~= 'DIC'
-    % loadUD output is in meter
-    [mesh,Dir] = loadUd(Dir.input_unit,Dir.fullpath, Dir.fillname,Operation,Dir);
-    if mesh.selct == 'F' || mesh.selct == 'f' 
-        [mat]      = matprop(Dir.E,Dir.nu,Dir.yield,Dir.stressstat,Dir.input_unit); % material props.
-        [el,mesh]  = meshDIC(mesh); % creat mesh for data
-        %runs isoparematric FE anlysis to slove for strain and stress at Gauss points
-        [el]       = FEanalysisStrains(el,mat,mesh);
-        % % STRAIN INTEGRATION, gl.dy & dx
-        [~,~,gl]   = StrainInegration(mesh,el,Dir);	% STRAIN INTEGRATION, gl.dy & dx
-        % Debugged(gl,Dir); %% debug
-        alldata   = [gl.Ux(:) gl.Uy(:) gl.dx(:) gl.dy(:)];    % all in input units
-    else
-        alldata = [Dir.Maps.X1(:), Dir.Maps.Y1(:),Dir.Maps.Ux(:),Dir.Maps.Uy(:)];
-    end
-else
-    Dir.results = [Dir.fullpath '\' Dir.fillname];
-    alldata = 0;
-end
+%% Locate the crack 
+% [alldata,Dir] = ThingsWentWrong(Dir,Maps);
+[DATA,UnitOffset,Dir, msk,SaveD] = Locate_Crack(0,[Dir.fullpath '\' Dir.fillname],Operation,Dir); 
+    
+%% prepare and run abaqus cae
+Dir.Abaqus = PrintRunCode(Dir, msk,SaveD,min(size(DATA.X)));
 
-%% Locate crack and prepare python code :: CROP AND DATA FOR ABAQUS
-[DATA,Dir.Abaqus,UnitOffset] = Locate_Crack(alldata,Dir.results,Operation,Dir); 
-
-%% Once Abaqus analysis are done
-% [Abaqus.J,Abaqus.Keff,Abaqus.KI,Abaqus.KII] = PlotKorJ(Dir.Abaqus,Dir.E,UnitOffset,'N');
+%% Post Processing
+[Abaqus.J,Abaqus.Keff,Abaqus.KI,Abaqus.KII] = PlotKorJ(Dir.Abaqus,Dir.E,UnitOffset,'N');
 % Abaqus.Stress_Maps = readAbaqusOutput(Dir.Abaqus,Dir.unique);
 % imagesc(Abaqus.Stress_Maps.X(1,:),Abaqus.Stress_Maps.Y(:,1),Abaqus.Stress_Maps.S12); axis image
 % save([Dir.Abaqus '\AbaqusOutput.mat'],'Abaqus','Dir');
+
+fprintf('All processing Took %.2f hours\n',toc/3600);
