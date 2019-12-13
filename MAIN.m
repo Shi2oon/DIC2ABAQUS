@@ -3,7 +3,7 @@
 close all;     restoredefaultpath; warning off;       addpath(genpath(pwd));              
 clc;clear;     set(0,'defaultAxesFontSize',20);       set(0,'DefaultLineMarkerSize',12)   
 DS = com.mathworks.mde.desk.MLDesktop.getInstance();  DS.closeGroup('Variables');  
-toc;
+tic;
 %% Setting the scene
 Dir.fullpath     = pwd; % filr Directory
 Dir.fillname     = '12MPa_mm';       % DONT include extension,in .mat or .dat format
