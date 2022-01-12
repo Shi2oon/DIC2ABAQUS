@@ -22,8 +22,6 @@ function ImportModules(fileID,folder)
     fprintf(fileID,'import xyPlot\n');
     fprintf(fileID,'import displayGroupOdbToolset as dgo\n');
     fprintf(fileID,'import connectorBehavior\n');
-    fprintf(fileID,'import displayGroupMdbToolset as dgm\n');
-    fprintf(fileID,'import xyPlot\n');
     fprintf(fileID,'\n');
     % NOT ABAQUS BUT EXISTING LIBS 
     fprintf(fileID,'from operator import itemgetter \n');

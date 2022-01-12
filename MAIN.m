@@ -9,8 +9,9 @@ Dir.fullpath     = pwd; % filr Directory
 Dir.fillname     = '12MPa_mm';       % DONT include extension,in .mat or .dat format
 Dir.input_unit   = 'mm';        % meter (m) or milmeter (mm) or micrometer(um);
 Dir.pixel_size   = 1;           % if DIC values are in pixel, 1 if in physical units;
-Operation        = 'DIC';       % calculation mode\n Str = Strain, xED = xEBSD, DIC for Displacement
+Dir.Operation    = 'DIC';       % calculation mode\n Str = Strain, xED = xEBSD, DIC for Displacement
 Dir.unique       = 'Synthetic_Data_12MPa';   % uniqe name for data set, can be = Dir.fillname;
+Dir.stressstat   = 'plane_stress'; % 'plane_strain
 
 %% INPUT MATERIAL PROPERTIES AND DATA
 % Poisson's ratio,          Young's Modulus [Pa],      		Material Name     
@@ -23,15 +24,16 @@ Dir.unique       = 'Synthetic_Data_12MPa';   % uniqe name for data set, can be =
 %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END of USER INTERFACE %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%     
 %% Locate the crack 
 % [alldata,Dir] = ThingsWentWrong(Dir,Maps);
-[DATA,UnitOffset,Dir, msk,SaveD] = Locate_Crack(0,[Dir.fullpath '\' Dir.fillname],Operation,Dir); 
+[DATA,UnitOffset,Dir, msk,SaveD] = Locate_Crack(0,Dir.input_unit,[Dir.fullpath '\' Dir.fillname],Dir); 
     
 %% prepare and run abaqus cae
-Dir.Abaqus = PrintRunCode(Dir, msk,SaveD,min(size(DATA.X)));
+[Dir.Abaqus,Abaqus.CAE] = PrintRunCode(Dir, ...
+        msk,SaveD,ceil(min(size(DATA.X1))*0.5-2),UnitOffset);
 
 %% Post Processing
-[Abaqus.J,Abaqus.Keff,Abaqus.KI,Abaqus.KII] = PlotKorJ(Dir.Abaqus,Dir.E,UnitOffset,'N');
+[Abaqus.J,Abaqus.Keff,Abaqus.KI,Abaqus.KII] = PlotKorJ(Dir.Abaqus,Dir.E,UnitOffset);
 % Abaqus.Stress_Maps = readAbaqusOutput(Dir.Abaqus,Dir.unique);
 % imagesc(Abaqus.Stress_Maps.X(1,:),Abaqus.Stress_Maps.Y(:,1),Abaqus.Stress_Maps.S12); axis image
-% save([Dir.Abaqus '\AbaqusOutput.mat'],'Abaqus','Dir');
+save([fileparts(Dir.Abaqus) '\AbaqusOutput.mat'],'Abaqus','Dir');
 
 fprintf('All processing Took %.2f hours\n',toc/3600);

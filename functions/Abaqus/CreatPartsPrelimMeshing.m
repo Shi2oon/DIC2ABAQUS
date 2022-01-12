@@ -1,4 +1,4 @@
-function CreatPartsPrelimMeshing(fileID)
+function CreatPartsPrelimMeshing(fileID,stressstat)
     % Sketching and creating the part as a rectangle
     fprintf(fileID,'mdb.models["Model-1"].ConstrainedSketch(name="__profile__", sheetSize=200.0); \n');
     fprintf(fileID,'mdb.models["Model-1"].sketches["__profile__"].rectangle(point1=(min(x), max(y)), point2=(max(x), min(y))); \n');
@@ -16,7 +16,11 @@ function CreatPartsPrelimMeshing(fileID)
     fprintf(fileID,'mdb.models["Model-1"].parts["temp"].seedEdgeByNumber(edges=[edge4],number=(nonodesy-1),constraint=FIXED) \n');
     % Defining mesh type, elements types and mesh the full part 
     fprintf(fileID,'mdb.models["Model-1"].parts["temp"].setMeshControls(elemShape=QUAD, regions= mdb.models["Model-1"].parts["temp"].faces, technique=STRUCTURED) \n');
-    fprintf(fileID,'mdb.models["Model-1"].parts["temp"].setElementType(elemTypes=(ElemType(elemCode=CPS4, elemLibrary=STANDARD, secondOrderAccuracy=OFF, hourglassControl=DEFAULT, distortionControl=DEFAULT), ), regions=(mdb.models["Model-1"].parts["temp"].faces, )) \n');
+    if strcmpi(stressstat, 'plane_strain')
+        fprintf(fileID,'mdb.models["Model-1"].parts["temp"].setElementType(elemTypes=(ElemType(elemCode=CPE4, elemLibrary=STANDARD, secondOrderAccuracy=OFF, hourglassControl=DEFAULT, distortionControl=DEFAULT), ), regions=(mdb.models["Model-1"].parts["temp"].faces, )) \n');
+    else
+        fprintf(fileID,'mdb.models["Model-1"].parts["temp"].setElementType(elemTypes=(ElemType(elemCode=CPS4, elemLibrary=STANDARD, secondOrderAccuracy=OFF, hourglassControl=DEFAULT, distortionControl=DEFAULT), ), regions=(mdb.models["Model-1"].parts["temp"].faces, )) \n');
+    end
     fprintf(fileID,'mdb.models["Model-1"].parts["temp"].generateMesh(); \n');
     % Creating orphan mesh
     fprintf(fileID,'mdb.models["Model-1"].parts["temp"].PartFromMesh(name="sample") \n');

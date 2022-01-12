@@ -15,8 +15,8 @@ function JobMaterialHistory(fileID,MatPunique,MatPtype,len)
     fprintf(fileID,'		matParams[0][1], matParams[0][2], matParams[0][3], matParams[0][4]), )) \n');
     fprintf(fileID,'elif matLaw == "Elastic-Anisotropic": \n');
     fprintf(fileID,'	mdb.models["Model-1"].materials[MaterialName].Elastic(table=((C11, C12, C22, C13, C23, C33,  \n');
-    fprintf(fileID,'		0.0, 0.0, 0.0, C44, 0.0, 0.0, 0.0, 0.0, C55, 0.0, 0.0,  \n');
-    fprintf(fileID,'		0.0, 0.0, 0.0, C66), ), type=ANISOTROPIC) \n');
+    fprintf(fileID,'		C14, C24, C34, C44, C15, C25, C35, C45, C55, C16, C26,  \n');
+    fprintf(fileID,'		C36, C46, C56, C66), ), type=ANISOTROPIC) \n');
     fprintf(fileID,'mdb.models["Model-1"].HomogeneousSolidSection(material=MaterialName, name="Section-1", thickness=None) \n');
     fprintf(fileID,'mdb.models["Model-1"].parts["sample"].SectionAssignment(offset=0.0, offsetField="", offsetType=MIDDLE_SURFACE, region=Region( \n');
     fprintf(fileID,'	elements=mdb.models["Model-1"].parts["sample"].elements), sectionName="Section-1",  \n');
