@@ -33,6 +33,7 @@ if      MatP.type == 'E'
             disp('Check Modulus Unit .. Corretced');    end
         MatP.E = MatP.E*offset^2;
         fprintf(fileID,'matParams=((%d,%.3f),);\n',MatP.E,MatP.nu);
+        
 elseif  MatP.type == 'R'
         fprintf(fileID,'matLaw = "Ramberg-Osgood";\n');
         if MatP.E < 1e6;    MatP.E = MatP.E*1e9;	MatP.yield = MatP.yield*1e9;
@@ -41,6 +42,7 @@ elseif  MatP.type == 'R'
         fprintf(fileID,'matParams=((%d,%.3f,%d,%.3f,%.3f),);\n',...
                 MatP.E,MatP.nu,MatP.yield,MatP.Exponent, MatP.Yield_offset);
         fprintf(fileID,'extractK   = 0;\n'); 
+        
 elseif  MatP.type == 'A'
         fprintf(fileID,'matLaw = "Elastic-Anisotropic";\n');
         fprintf(fileID,'extractK   = 1;\n'); 
@@ -66,5 +68,22 @@ elseif  MatP.type == 'A'
         MatP.Stiffness(5,5),MatP.Stiffness(5,6));
                                                                fprintf(fileID,'C66 = %d;\n',...
         MatP.Stiffness(6,6));
+    
+elseif  MatP.type == 'P'
+        fprintf(fileID,'matLaw = "Elasto-Plastic";\n');
+        if MatP.E < 1e6;    MatP.E = MatP.E*1e9;	MatP.yield = MatP.yield*1e9;
+            disp('Check Modulus and Yield stress Units .. Corretced');    end
+        MatP.E = MatP.E*offset^2;       MatP.Plastic_Stress = MatP.Plastic_Stress*offset^2;
+        fprintf(fileID,'matParams=((%d,%.3f,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d),);\n',...
+            MatP.E,MatP.nu,MatP.Plastic_Stress(1),MatP.Plastic_Stress(2),...
+            MatP.Plastic_Stress(3),MatP.Plastic_Stress(4),MatP.Plastic_Stress(5),...
+            MatP.Plastic_Stress(6),MatP.Plastic_Stress(7),MatP.Plastic_Stress(8),...
+            MatP.Plastic_Stress(9),MatP.Plastic_Stress(10));
+        fprintf(fileID,'matParams1=((%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f),);\n',...
+            MatP.Plastic_Strain(1),MatP.Plastic_Strain(2),MatP.Plastic_Strain(3),...
+            MatP.Plastic_Strain(4),MatP.Plastic_Strain(5),MatP.Plastic_Strain(6),...
+            MatP.Plastic_Strain(7),MatP.Plastic_Strain(8),MatP.Plastic_Strain(9),...
+            MatP.Plastic_Strain(10));
+        fprintf(fileID,'extractK   = 0;\n');
 end
 end

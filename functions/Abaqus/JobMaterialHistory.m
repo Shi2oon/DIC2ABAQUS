@@ -13,6 +13,16 @@ function JobMaterialHistory(fileID,MatPunique,MatPtype,len)
     fprintf(fileID,'elif matLaw=="Ramberg-Osgood": \n');
     fprintf(fileID,'	mdb.models["Model-1"].materials[MaterialName].DeformationPlasticity(table=((matParams[0][0],  \n');
     fprintf(fileID,'		matParams[0][1], matParams[0][2], matParams[0][3], matParams[0][4]), )) \n');
+    
+    fprintf(fileID,'elif matLaw=="Elasto-Plastic": \n');
+    fprintf(fileID,'	mdb.models["Model-1"].materials[MaterialName].Plastic(table=((matParams[0][2],  \n');
+    fprintf(fileID,'		matParams1[0][0]), (matParams[0][3], matParams1[0][1]), (matParams[0][4], \n');
+    fprintf(fileID,'		matParams1[0][2]), (matParams[0][5], matParams1[0][3]), (matParams[0][6], \n');
+    fprintf(fileID,'		matParams1[0][4]), (matParams[0][7], matParams1[0][5]), (matParams[0][8], \n');
+    fprintf(fileID,'		matParams1[0][6]), (matParams[0][9], matParams1[0][7]), (matParams[0][10], \n');
+    fprintf(fileID,'		matParams1[0][8]), (matParams[0][11],matParams1[0][9]))) \n');
+    fprintf(fileID,'	mdb.models["Model-1"].materials[MaterialName].Elastic(table=((matParams[0][0], matParams[0][1]), )) \n');
+        
     fprintf(fileID,'elif matLaw == "Elastic-Anisotropic": \n');
     fprintf(fileID,'	mdb.models["Model-1"].materials[MaterialName].Elastic(table=((C11, C12, C22, C13, C23, C33,  \n');
     fprintf(fileID,'		C14, C24, C34, C44, C15, C25, C35, C45, C55, C16, C26,  \n');

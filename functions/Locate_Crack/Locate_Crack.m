@@ -119,7 +119,7 @@ end
     title('Select the Crack mask, start from crack tip');
     [xm,ym] = ginput(2);
 end
-yo = [yo(1); yo(1)];     %xm = [xo(1); xm(2)]; if the crack is on x axis
+% yo = [yo(1); yo(1)];     %xm = [xo(1); xm(2)]; if the crack is on x axis
 
 %% get excat from data in
 xLin       = datum.X1(1,:);

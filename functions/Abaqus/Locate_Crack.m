@@ -119,6 +119,7 @@ end
     title('Select the Crack mask, start from crack tip');
     [xm,ym] = ginput(2);
 end
+%
 yo = [yo(1); yo(1)];     %xm = [xo(1); xm(2)]; if the crack is on x axis
 
 %% get excat from data in
@@ -135,7 +136,7 @@ yLin       = datum.Y1(:,1);
 msk.ds1 = index;
 [~, index] = min(abs(yLin-ym(2)));      ym(2) = yLin(index);    
 msk.ds2 = index;
-%{
+
 %% adjust to min and max
 if xo(2)<=min(datum.X1(1,:)) || abs(xo(2)-min(datum.X1(1,:)))<abs(xo(2)-max(datum.X1(1,:)))
     xo(2)=min(datum.X1(1,:)); end

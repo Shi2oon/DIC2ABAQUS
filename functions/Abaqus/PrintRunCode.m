@@ -18,9 +18,9 @@ JobMaterialHistory(fileID,MatP.unique,MatP.type,len)     %% JOB, MATERIAL, HISTO
 prepareBC(fileID,SaveModel)             %% PREPARE FOR BOUNDARY CONDITIONS
 ApplyBCs(fileID,SaveModel)              %% APPLY BOUNDARY CONDITIONS
 JobSyubmitResults(fileID,folder,MatP.unique)   %% JOB SUBMIT AND RESULT PARSING
-% SaveReport(fileID,folder,MatP.unique)          %% save report 
-% printTiffs(fileID,folder,'N',MatP.unique,2);   %% save tiff images for U and S
-% printTiffs(fileID,folder,'D',MatP.unique,2);   %% save tiff images for deformaed U and S
+SaveReport(fileID,folder,MatP.unique)          %% save report 
+printTiffs(fileID,folder,'N',MatP.unique,2);   %% save tiff images for U and S
+printTiffs(fileID,folder,'D',MatP.unique,2);   %% save tiff images for deformaed U and S
 fclose(fileID);
 
 %% backup to run
