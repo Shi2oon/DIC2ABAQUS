@@ -38,7 +38,6 @@ yvec = minGrid : gridStep : maxGrid; % [m]
 [x,y] = meshgrid(xvec,yvec); % [m]
 % StressIntensityFactor = 30; % [MPa m^0.5]
 fprintf('preparing synthetic Westergaard Solution Data .. ');
-K = StressIntensityFactor * 1E6; % Stress intensity factor [Pa m^0.5]
 E = 210E9; % Young's Modulus [Pa]
 nu = 0.3; % poisson ratio
 mu = E/(2.*(1+nu)); % Shear Modulus [Pa]
@@ -49,33 +48,26 @@ mu = E/(2.*(1+nu)); % Shear Modulus [Pa]
         case 'plane_stress'
             kappa = (3 - nu)./(1 + nu); % [/]
     end
-[theta,r] = cart2pol(x,y);
+[th,r] = cart2pol(x,y);
+
 switch Mode
     case 'I'
-        ux = (K./(2.*mu)).*sqrt(r/(2*pi)).*cos(theta/2).*(kappa - 1 + ...
-              2.*(sin(theta/2)).^2); % Anderson p99 A2.44a
-        uy = (K./(2.*mu)).*sqrt(r/(2*pi)).*sin(theta/2).*(kappa + 1 - ...
-              2.*(cos(theta/2)).^2); % Anderson p99 A2.44b
-        S11 = (K./sqrt(r.*2*pi)).*cos(theta/2).*(1 - (sin(theta/2).*sin(3*theta/2))); 
-        S22 = (K./sqrt(r.*2*pi)).*cos(theta/2).*(1 + (sin(theta/2).*sin(3*theta/2))); 
-        S12 = (K./sqrt(r.*2*pi)).*cos(theta/2).*(sin(theta/2).*cos(3*theta/2));
+        KI = StressIntensityFactor * 1E6; KII=0;
 
     case 'II'
-        ux = (K./(2.*mu)).*sqrt(r/(2*pi)).*sin(theta/2).*(kappa + 1 + ...
-              2.*(cos(theta/2)).^2); % Anderson p99 A2.44a
-        uy = (K./(2.*mu)).*sqrt(r/(2*pi)).*cos(theta/2).*(kappa - 1 - ...
-              2.*(sin(theta/2)).^2); % Anderson p99 A2.44b
-        S11 = (-K./sqrt(r.*2*pi)).*sin(theta/2).*(2 + (cos(theta/2).*cos(3*theta/2))); 
-        S22 = (K./sqrt(r.*2*pi)).*sin(theta/2).*cos(theta/2).*cos(3*theta/2); 
-        S12 = (K./sqrt(r.*2*pi)).*cos(theta/2).*(1-(sin(theta/2).*sin(3*theta/2)));
+        KI = 0; KII = StressIntensityFactor * 1E6;
     case 'fun'
-        ux = (rand(1)*(K(1)./(2.*mu)).*sqrt(r/(2*pi)).*sin(theta/2).*(kappa + 1 + ...
-              2.*(cos(theta/2)).^2)+rand(1)*(K(1)./(2.*mu)).*sqrt(r/(2*pi)).*cos(theta/2).*(kappa - 1 + ...
-              2.*(sin(theta/2)).^2)); % Anderson p99 A2.44a
-        uy = (rand(1)*(K(2)./(2.*mu)).*sqrt(r/(2*pi)).*cos(theta/2).*(kappa - 1 - ...
-              2.*(sin(theta/2)).^2)+rand(1)*(K(2)./(2.*mu)).*sqrt(r/(2*pi)).*sin(theta/2).*(kappa + 1 - ...
-              2.*(cos(theta/2)).^2)); % Anderson p99 A2.44b
+        KI = StressIntensityFactor(1) * 1E6;
+        KII = StressIntensityFactor(2) * 1E6;
 end
+
+% calulate the displacement % Anderson p99 A2.44a
+ux = ( 0.5*KI/mu*sqrt(r/(2*pi)).*(+cos(th/2).*(kappa-cos(th)))+...
+              0.5*KII/mu*sqrt(r/(2*pi)).*(+sin(th/2).*(kappa+2+cos(th))));
+uy = ( 0.5*KI/mu*sqrt(r/(2*pi)).*(+sin(th/2).*(kappa-cos(th)))+...
+              0.5*KII/mu*sqrt(r/(2*pi)).*(-cos(th/2).*(kappa-2+cos(th))));
+
+
 subplot(1,3,1); contourf(x,y,ux); 
 axis image; box off; c=colorbar;    c.Label.String= ['U_{x} [m]'];
 subplot(1,3,2);contourf(x,y,uy); 

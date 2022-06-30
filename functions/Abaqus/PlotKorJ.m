@@ -149,7 +149,7 @@ try
             if min([KII.Raw(:); KI.Raw(:)])>0;     ylim([0 inf]);      end
             yyaxis right;
             plot(Direction,'r--<','MarkerEdgeColor','r','LineWidth',1.5,'MarkerFaceColor','r');
-            ylabel('\theta^{o}'); ylim([0 90]);
+            ylabel('\theta^{o}'); ylim([-90 90]);
             xlabel('Contour Number'); 
             legend(['K_{I} = '     num2str(KI.true)  ' ± ' num2str(KI.div)  ' MPa\surdm' ],...
                    ['K_{II} = '    num2str(KII.true) ' ± ' num2str(KII.div) ' MPa\surdm' ],...
@@ -193,7 +193,7 @@ try
                 if min([KII.Raw(:); KI.Raw(:)])>0;         end
                 yyaxis right; 
                 plot(Direction,'r--<','MarkerEdgeColor','r','LineWidth',1.5,'MarkerFaceColor','r');
-                ylabel('\theta^{o}'); ylim([0 90]);
+                ylabel('\theta^{o}'); ylim([-90 90]);
                 xlabel('Contour Number');
                 legend(['K_{I} = '     num2str(KI.true)  ' ± ' num2str(KI.div)  ' MPa\surdm' ],...
                        ['K_{II} = '    num2str(KII.true) ' ± ' num2str(KII.div) ' MPa\surdm' ],...
