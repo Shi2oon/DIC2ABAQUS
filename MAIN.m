@@ -23,7 +23,7 @@ Dir.stressstat   = 'plane_stress'; % 'plane_strain
 % if 'Ramberg-Osgood' type of material input                Yield Stress [Pa] 
 %   Dir.Exponent = 26.67;     Dir.Yield_offset = 1.24;        Dir.yield = 4E9;
 % if 'Elastic-Anisotropic' you need to define the stifness tensor 
-%     Dir.Stifness = NaN(6,6);
+%     Dir.Stiffness = NaN(6,6);
 % if 'Plastic' you need to define the stifness tensor 
 % Dir.type  = 'P'; 
 % Dir.Plastic_Strain = [0.0010,0.0023,0.0038,0.0059,0.0085,0.0120,0.0150,0.0205,0.0260,0.0336]'-0.0010;
