@@ -45,8 +45,7 @@ for iO=1:nn
         % in case it is zero as Abaqus won't work
         Dirxyz.Uy = ones(size(Maps.Ux))*1e-12;
     end
-    [Dirxyz,UnitOffset,Dirxyz.msk,SaveD] = ...
-        Locate_Crack(Dirxyz);
+    [Dirxyz,UnitOffset,Dirxyz.msk,SaveD] = Locate_Crack(Dirxyz);
     if ~isfield(Maps,"msk")
         Maps.msk = Dirxyz.msk;
     end
@@ -57,12 +56,14 @@ for iO=1:nn
     if iO == 1      % Mode I
         [Jd,K,KI,KII,Direction] = PlotKorJ(Abaqus,Maps.E,UnitOffset,Maps.Alot);
         if ~isempty(Direction.Raw)
-            fprintf('\nRecommended J-integral direction is %d ± %d\t',...
-                round(Direction.true,1), Direction.div)
-            Ans = questdlg_timer(60,['J-integral direction is ' ...
-                num2str(Direction.true) ' ± ' num2str(Direction.div) ...
-                ', Do you want to adjust?'],...
-                [ num2str(Direction.true) ' ± ' num2str(Direction.div)],...
+            % see https://doi.org/10.1016/0045-7825(77)90023-8 and 
+            % https://doc.comsol.com/6.2/doc/com.comsol.help.sme/sme_ug_theory.06.093.html
+            fprintf('\nRecommended virtual crack extension for max. J-integral direction is %.1f ± %.1f\t\n',...
+                round(Direction.true,1), round(Direction.div,1))
+            Ans = questdlg_timer(60,['Virtual crack extension is ' ...
+                num2str(round(Direction.true,1)) ' ± ' num2str(round(Direction.div,1)) ...
+                ', Do you want to adjust?'], ...
+                [ num2str(round(Direction.true,1)) ' ± ' num2str(round(Direction.div,1))],...
                 'Y','N','N');
             if Ans == 'Y'
                 if (abs(Direction.true(1))-abs(Direction.div(1)))>5 && ...
@@ -103,7 +104,7 @@ for iO=1:nn
         loT(iO)  = length(KIII.Raw);
     end
     % J when calculating the SIF (more accurate)
-    JKRaw(iO,1:length(Jd.K.Raw)) = Jd.Raw;
+    JKRaw(iO,1:length(Jd.Raw)) = Jd.Raw;
     JRaw(iO,1:length(Jd.Raw)) = Jd.Raw; % J from J analysis
 end
 J.JKIII = JKRaw;
@@ -152,8 +153,8 @@ if ~isempty(Direction.Raw)
         Direction.Olddiv = round(std(rmoutliers(Direction.OldRaw(contrs:end,1)),1),1);
     end
 end
-%
-%%
+
+%% plotting
 plotJKIII(KI,KII,KIII,J,Maps.stepsize,Maps.input_unit)
 saveas(gcf, [Maps.results '_J_KI_II_III.fig']);
 saveas(gcf, [Maps.results '_J_KI_II_III.tif']);    %close all

@@ -75,8 +75,10 @@ if ~isfield(datum,"msk") || strcmpi(answer,'Y')
     % ATTENTION : crackpoints should be defined with the crack tip in first position.....
     title('Select the crack tip, start from crack tip',FontSize=20);
     [xo,yo] = ginput(2);
-%     yo = [yo(1); yo(1)];     %xm = [xo(1); xm(2)]; if the crack is on x axis
-    line(xo,yo,'Color','w','LineStyle','-.','linewidth',2)
+    % yo = [yo(1); yo(1)];     %xm = [xo(1); xm(2)]; if the crack is on x axis
+    xom = xo; yom = yo;
+    [~, index] = min(abs(xLin-xom(2)));      xom(2) = xLin(index);
+    line(xom,yom,'Color','w','LineStyle','-.','linewidth',2)
     title('Select the Crack mask, start from crack tip',FontSize=20);
     [xm,ym] = ginput(2);
 else

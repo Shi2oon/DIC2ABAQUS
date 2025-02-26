@@ -1,5 +1,13 @@
 
-function [OutJ,KI,KII,JK,Der_Deg] = readDATAbaqus(filrname)
+function [OutJ,KI,KII,JK,Der_Deg] = readDATAbaqus(filrname,oh)
+if exist("oh",'var')
+    switch oh
+        case 1
+            clear oh
+        case 99
+            clear oh
+    end
+end
 fid = fopen(filrname,'rt') ;
 S = textscan(fid,'%s','Delimiter','\n');
 S = S{1} ;
@@ -140,11 +148,13 @@ KLM = JK(end);      [A,~] = ismember(JK,KLM);	  JK(A)  = [];   JK(end+1)   = KLM
 Kon = min([length(OutJ) length(JK) length(KI) length(KII)]);
 OutJ(Kon:end)=[];   KI(Kon:end)=[]; KII(Kon:end)=[];    JK(Kon:end)=[];
 %}
+if ~exist("oh",'var')
 close all; plot(OutJ); hold on; plot(JK); legend('J','J_K')%trim acess 
 set(gcf,'position',[98 311 1481 667])
 text(1:length(JK),JK,string([1:length(JK)]))
 pause(0.1)
-oh = input('where to cut the contour? ');               
+oh = input('where to cut the contour? '); 
+end
 OutJ=OutJ(1:oh);KI=KI(1:oh);KII=KII(1:oh);JK=JK(1:oh);
 close
 if ~isempty(Der_Deg)

@@ -27,7 +27,9 @@ function [folder]=Adjust4Direction(saveTo,Angle)
         ', ' num2str(cosd(Angle)) ', ' num2str(sind(Angle))  ', 0.'];
 %     C{1}(end-5:end-1)=[];
     finalform = C{1}(1:end);
-    iv=1;
+    iv=99;
+    saveTo = fullfile(fileparts(saveTo),num2str(iv),num2str(iv)); 
+    mkdir(fileparts(saveTo) );
     fileID = fopen([fileparts(saveTo) '\Job-' num2str(iv) '.inp'],'w');
     for i=1:size(finalform,1);          stri = finalform(i);
         if ~cellfun('isempty',stri);    fprintf(fileID,'%s\n',char(stri)); end
@@ -114,7 +116,27 @@ fclose(fileID);
 
 %% Excute
 PWD =pwd;           cd(folder)
-system(['abaqus cae ','noGUI','=Abaqus_script.py']); % Windows system
+if ~exist(['Number_' num2str(NumB) '.dat'],'file')
+system(['abaqus cae ','noGUI','=Abaqus_script.py']);
+% Pause to ensure the script has time to execute
+pause(10); % Adjust the pause duration as needed
+
+% Close the Abaqus CAE GUI
+[status, cmdout] = system('tasklist /FI "IMAGENAME eq abq*.*" /FO CSV');
+
+if status == 0
+    % Parse the output to find the process ID (PID) of Abaqus CAE
+    lines = strsplit(cmdout, '\n');
+    for i = 2:length(lines)
+        if contains(lines{i}, 'abq')
+            tokens = strsplit(lines{i}, ',');
+            pid = str2double(tokens{2});
+            % Terminate the Abaqus CAE process
+            system(['taskkill /PID ' num2str(pid) ' /F']);
+        end
+    end
+end
+end
 cd(PWD);
 OtF = [folder '\Number_' num2str(NumB)];
 end

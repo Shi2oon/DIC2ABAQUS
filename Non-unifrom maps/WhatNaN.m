@@ -4,7 +4,7 @@ if length(f)/length(E11) == 0
     clearvars f
     [f(:,1),f(:,2)]=ind2sub(size(E11(1,:)),find(E11(1,:)==0));
 end
-if length(f)/length(E11) > 0.01
+if length(f)/length(E11) > 0.001
 [LV1] = RemoveOutNaN(E11); %CHECK FOR OUTLIERS
 [f1(:,1),f1(:,2)] = ind2sub(size(LV1),find(LV1==0)); % check how many we found
     % check if the opercentage is acceptable
@@ -15,7 +15,7 @@ if length(f)/length(E11) > 0.01
         LV1 = ones(size(LV1));
         LV1(f) = 0;
 	end
-	fprintf('\nOutliers percentage is %1.2f (> 0.5 allowed). I will now trim them out\n',...
+	fprintf('\nOutliers percentage is %1.2f (> 0.1 allowed). I will now trim them out\n',...
         length(f)/length(E11)*100);
 	E11(:,LV1==0) = []; 		E22(:,LV1==0) = []; 
 	E12(:,LV1==0) = []; 		X(:,LV1==0) = []; 

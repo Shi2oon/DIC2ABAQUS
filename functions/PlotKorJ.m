@@ -102,7 +102,7 @@ if ~exist('pp','var'); close all;
     if KII.true>0 && KI.true>0;     ylim([0 inf]);      end
     set(gcf,'position',[600,100,950,850]);  xlim([0 length(J.Raw)+2])
     box off; saveas(gcf, fullfile(saveto,[Ond '_KI and KII.fig']));
-    saveas(gcf, fullfile(saveto,[Ond '_KI and KII.tif']));    close
+    saveas(gcf, fullfile(saveto,[Ond '_KI and KII.tif']));    
     
     %% plot ALL K
     plot(K.J_K.Raw,'k--o','MarkerEdgeColor','k','LineWidth',1.5,'MarkerFaceColor','k');hold on;

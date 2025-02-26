@@ -23,9 +23,14 @@ end
 %     KI.RAw     = abs(dataum.data(2,:)*sqrt(offset)*1e-6);
 %     KII.Raw    = abs(dataum.data(3,:)*sqrt(offset)*1e-6);
 %     K.Raw   = sqrt(abs(J.Raw)*E)*1e-6;
-
-[J.Raw,KI.Raw, KII.Raw, J.K.Raw,Direction.Raw] = ...
-    readDATAbaqus([saveto '.dat']);
+try
+    if exist('pp','var')
+        [J.Raw,KI.Raw, KII.Raw, J.K.Raw,Direction.Raw] = ...
+            readDATAbaqus([saveto '.dat'],pp);
+    else
+        [J.Raw,KI.Raw, KII.Raw, J.K.Raw,Direction.Raw] = ...
+            readDATAbaqus([saveto '.dat']);
+    end
 [saveto,Ond] = fileparts(saveto);
 J.Raw     = J.Raw(:)./offset;             % in J/m^2
 J.K.Raw   = J.K.Raw(:)./offset;           % in J/m^2
@@ -35,6 +40,13 @@ K.J_K.Raw = sqrt(J.K.Raw(:)*E)*1e-6;            % in MPa
 K.J.Raw   = sqrt(abs(J.Raw(:))*E)*1e-6;         % in MPa
 LENK = min(length(KII.Raw), length(KI.Raw));
 K.I_II.Raw = sqrt(KII.Raw(1:LENK).^2+KI.Raw(1:LENK).^2);
+
+if exist("pp",'var')
+    if pp==1 || pp==9
+    else
+        clear pp
+    end
+end
 
 %% remove outliers
 contrs   = length(KI.Raw);        contrs = contrs - round(contrs*0.4);
@@ -61,6 +73,7 @@ if ~isempty(Direction.Raw)
     Direction.true = round(mean(rmoutliers(Direction.Raw(contrs:end))),1);
     Direction.div  = round(std(rmoutliers(Direction.Raw(contrs:end)),1),1);
 end
+%
 %% Plotting
 if ~exist('pp','var'); close all;
     %% for J
@@ -163,7 +176,7 @@ if ~exist('pp','var'); close all;
         box off; saveas(gcf, [saveto '\' Ond '_KI, KII and D.fig']);
         saveas(gcf, [saveto '\' Ond '_KI, KII and D.tif']);    %close
     end
-    
+%
 else
     if pp==99
         fig=figure;set(fig,'defaultAxesColorOrder',[[0 0 0]; [1 0 0]]);
@@ -209,4 +222,42 @@ else
         end
     end
 end
-
+%}
+%%
+catch err
+    disp(err.message)
+    if exist('pp','var')
+        [J.Raw] = JustJ([saveto '.dat'],pp);
+    else
+        [J.Raw] = JustJ([saveto '.dat']);
+    end
+    [saveto,Ond] = fileparts(saveto);
+    J.Raw    = J.Raw(:)./offset;                % in K
+    contrs   = length(J.Raw);           contrs = contrs - round(contrs/2); % in MPa
+    K.Raw   = sqrt(abs(J.Raw(:))*E)*1e-6;
+    dic = ceil(-log10(mean(rmoutliers(J.Raw(contrs:end)))))+2;
+    J.true  = round(mean(rmoutliers(J.Raw(contrs:end))),dic);
+    J.div   = round(std(rmoutliers(J.Raw(contrs:end)),1),dic);
+    K.true = round(mean(rmoutliers(K.Raw(contrs:end))),dic);
+    K.div  = round(std(rmoutliers(K.Raw(contrs:end)),1),dic);
+    if ~exist('pp','var');  close all;
+        fig=figure;set(fig,'defaultAxesColorOrder',[[0 0 0]; [1 0 0]]);
+            yyaxis left;    hold on;
+            plot(K.Raw,'k--o','MarkerEdgeColor','k','LineWidth',1.5,'MarkerFaceColor','k');
+            ylabel('K (MPa m^{0.5})'); hold off
+            if min([K.Raw(:)])>0;     ylim([0 inf]);      end
+            yyaxis right;
+            plot(J.Raw,'r--<','MarkerEdgeColor','r','LineWidth',1.5,'MarkerFaceColor','r');
+            ylabel('J [J/m^2]');        ylim([0 inf]);
+            xlabel('Contour Number');
+            legend(['K_{eff} = '        num2str(K.true)  ' ± ' num2str(K.div)  ' MPa\surdm' ],...
+                   ['J_{integral} = ' num2str(J.true)   ' ± ' num2str(J.div)   ' J/m^2'],...
+                    'location','northoutside','box','off');
+            set(gcf,'WindowStyle','normal');
+            set(gcf,'position',[60,10,850,1050]);  xlim([0 length(J.Raw)+2])
+            box off; saveas(gcf, [saveto '\' Ond '_Keff.tif']);
+            saveas(gcf, [saveto '\' Ond '_Keff.fig']); close
+    end
+    KI=[];      KII=[];
+    %     rethrow(err)
+end
