@@ -259,5 +259,6 @@ catch err
             saveas(gcf, [saveto '\' Ond '_Keff.fig']); close
     end
     KI=[];      KII=[];
+    Direction = [];
     %     rethrow(err)
 end

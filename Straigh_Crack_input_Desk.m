@@ -55,4 +55,4 @@ Maps.Z = RawData.Z1;      Maps.Uz = RawData.Uz;
 % Maps.Uy = inpaint_nans(Maps.Uy);
 % Maps.Ux = inpaint_nans(Maps.Ux);
 
-[J,KI,KII,KIII] = DIC2CAE(Maps);
+[J,KI,KII,KIII] = DIC2ABAQUS(Maps);

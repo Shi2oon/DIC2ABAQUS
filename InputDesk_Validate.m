@@ -13,4 +13,4 @@ Maps.Operation    = 'DIC';       % Strain, xED = xEBSD, DIC = Displacement
 Maps.stressstat   = 'plane_stress'; % 'plane_stress' OR 'plane_strain'
 Maps.unique       = 'Calibration';
 
-[J,KI,KII,KIII] = DIC2CAE(Maps);
+[J,KI,KII,KIII] = DIC2ABAQUS(Maps);

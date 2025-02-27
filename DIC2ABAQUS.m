@@ -1,4 +1,4 @@
-function [J,KI,KII,KIII,Direction] = DIC2CAE(Maps)
+function [J,KI,KII,KIII,Direction] = DIC2ABAQUS(Maps)
 % variable M4 is for the displacement components
 %%
 warning on; addpath([pwd '\functions'])

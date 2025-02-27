@@ -15,8 +15,9 @@ Maps.unique       = 'Crack_in_Al_5052';
 
 %% INPUT MATERIAL PROPERTIES AND DATA
 % 'E' for Elastic material
-% Poisson's ratio,          Young's Modulus [Pa],     Material Name
-Maps.nu    = 0.321;         Maps.E  = 70E9;         Maps.Mat = 'Al_5052';
+Maps.Mat = 'Al_5052';       %Material Name, do not use space
+% Poisson's ratio,          Young's Modulus [Pa],     
+Maps.nu    = 0.321;         Maps.E  = 70E9;         
 Maps.type  = 'E';
 %{
 % if 'Ramberg-Osgood' type of material input
@@ -45,7 +46,7 @@ tic
 % using "angle_deg" variable which importnat when calculating the
 % J-integral as it depended on the virtual crack extension method, see
 % https://doc.comsol.com/6.2/doc/com.comsol.help.sme/sme_ug_theory.06.093.html
-[BCf, UnitOffset,Maps] = DIC2CAE_wNAN(Maps, [1375 955]*Maps.pixel_size,...
+[BCf, UnitOffset,Maps] = DIC2ABAQUS_wNAN(Maps, [1375 955]*Maps.pixel_size,...
                                       resultsDir,180);
 
 ABAQUS = PrintRunCode(Maps,Maps.results);
