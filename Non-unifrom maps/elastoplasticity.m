@@ -1,10 +1,10 @@
-function [Yield_offset,Exponent] = elastoplasticity(E,epsilon_y,yield,n)
+function [Yield_offset,Exponent] = elastoplasticity(E,yield,n)
 % Define material properties
 % E = 69.99e9; % Elastic Modulus in Pa
 % yield = 193e6; % Yield Stress in Pa
 % epsilon_y = 0.002;
 % n = 0.13; % Strain Hardening Exponent (assumed)
-sigma_y =  epsilon_y* E; % Yield Strain
+epsilon_y =  yield/ E; % Yield Strain
 
 % Define strain range
 epsilon = linspace(0, 0.05, 1000); % Strain from 0 to 5%
@@ -19,7 +19,7 @@ for i = 1:length(epsilon)
 %         if nn == 1
 %             StartPlasticity = i;
 %         end
-        sigma(i) = sigma_y * (epsilon(i) / epsilon_y)^n; % Plastic region
+        sigma(i) = yield * (epsilon(i) / epsilon_y)^n; % Plastic region
         if yield <= sigma(i)
            nn = nn+1; 
         sigmaPl(nn) = sigma(i);

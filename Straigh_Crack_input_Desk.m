@@ -4,8 +4,9 @@
 % To genereat syntahtic data to validate this the code use
 % "InputDesk_Validate".
 clc;clear;close all
-addpath(genpath([pwd '\functions']));
-DataDirect = fullfile(pwd,'1KI-2KII-3KIII_Data.dat'); % file location
+addpath(genpath([pwd '\Functions']));
+addpath(genpath([pwd '\Miscellaneous']));
+DataDirect = fullfile(pwd,'\Miscellaneous\1KI-2KII-3KIII_Data.dat'); % file location
 Maps.results = erase(DataDirect,'.dat');
 % Domain size (square, crack tip at centre).
 Maps.input_unit     = 'mm';            % meter (m) or milmeter (mm) or micrometer(um);

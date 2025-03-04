@@ -2,6 +2,25 @@ function [J,KI,KII,KIII,Direction] = DIC2ABAQUS(Maps)
 % variable M4 is for the displacement components
 %%
 warning on; addpath([pwd '\functions'])
+
+% if the data is not regulary grides use the code below
+%{
+X = linspace(min(Maps.X(:)),max(Maps.X(:)),ceil(sqrt(length(Maps.X(:)))));
+Y = linspace(min(Maps.Y(:)),max(Maps.Y(:)),ceil(sqrt(length(Maps.Y(:)))));
+[x,y] = meshgrid(X,Y);
+F = scatteredInterpolant(Maps.X(:), Maps.Y, Maps.Ux(:),'natural');
+Ux = F(x, y);
+F = scatteredInterpolant(Maps.X(:), Maps.Y, Maps.Uy(:),'natural');
+Uy = F(x, y);
+if isfield(Maps,"Uz")
+    F = scatteredInterpolant(Maps.X(:), Maps.Y, Maps.Uz(:),'natural');
+    Uz = F(x, y);
+    Maps.Z = zeros(size(x));    Maps.Uz = Uz;
+end
+Maps.X = x;     Maps.Y = y;     Maps.Ux = Ux;   Maps.Uy = Uy;
+DICdata.data = [x(:),y(:),Ux(:),Uy(:)];
+%}
+
 nn =2;
 if ~isfield(Maps,"Uz")
     Maps.Uz = ones(size(Maps.Ux))*1e-12;

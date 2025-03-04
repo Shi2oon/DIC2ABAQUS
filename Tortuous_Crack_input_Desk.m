@@ -5,7 +5,8 @@
 
 clc;clear;close all
 addpath(genpath([pwd '\Non-unifrom maps']));
-resultsDir = fullfile(pwd, 'Non-unifrom maps','Example_Data.dat'); % file location
+addpath(genpath([pwd '\Miscellaneous']));
+resultsDir = fullfile(pwd, 'Miscellaneous','Tortuous_Crack_Data.dat'); % file location
 Maps.results = erase(resultsDir,'.dat');
 Maps.input_unit     = 'um';         % meter (m) or milmeter (mm) or micrometer(um);
 Maps.pixel_size   = 1e-3;           % if DIC values are in pixel, 1 if in physical units;
@@ -23,10 +24,10 @@ Maps.type  = 'E';
 % if 'Ramberg-Osgood' type of material input
 % The hardening exponet for Ramberg-Osgood is bigger than 1
 % see https://classes.engineering.wustl.edu/2009/spring/mase5513/abaqus/docs/v6.6/books/stm/default.htm?startat=ch04s03ath111.html
-%                                                     Yield Stress [Pa]
-Maps.Exponent = 26.67;      Maps.Yield_offset = 1.24; Maps.yield = 4E9;
-Maps.type  = 'R';
-Maps.E  = 193E9;            Maps.nu    = 0.3;
+%                                                   Yield Stress [Pa]
+Maps.Exponent = 26.67;  Maps.Yield_offset = 1.24;   Maps.yield = 4E9;
+Maps.type  = 'R';       Maps.E  = 210E9;            Maps.nu    = 0.3;
+
 % if 'Elastic-Anisotropic' you need to define the stifness tensor
 Maps.type  = 'A';
 Maps.Stiffness = [  283  121  121   0   0   0
@@ -36,7 +37,7 @@ Maps.Stiffness = [  283  121  121   0   0   0
                     0    0    0     0   81  0
                     0    0    0     0   0   81]*1e9;
 Maps.nu    = 0.30;         
-Maps.E  = 000E9; for non-cubic materials
+Maps.E  = 210E9; for non-cubic materials
 %}
 tic
 % DIC2CAE_wNAN(MatP, Crack, resultsDir,angle_deg)
@@ -46,12 +47,11 @@ tic
 % using "angle_deg" variable which importnat when calculating the
 % J-integral as it depended on the virtual crack extension method, see
 % https://doc.comsol.com/6.2/doc/com.comsol.help.sme/sme_ug_theory.06.093.html
-[BCf, UnitOffset,Maps] = DIC2ABAQUS_wNAN(Maps, [1375 955]*Maps.pixel_size,...
-                                      resultsDir,180);
-
+[BCf, Maps.UnitOffset,Maps.stepsize] = DIC2ABAQUS_wNAN(Maps, ...
+                    [1375 955]*Maps.pixel_size,resultsDir,180);
 ABAQUS = PrintRunCode(Maps,Maps.results);
 fprintf('Execution time: %.1f minutes.\n', toc/60);
-[J,K,KI,KII,Direction] = PlotKorJ(ABAQUS,Maps.E,UnitOffset);
+[J,K,KI,KII,Direction] = PlotKorJ(ABAQUS,Maps.E,Maps.UnitOffset);
 plotJKIII(KI,KII,[],J,Maps.stepsize,Maps.input_unit)
 saveas(gcf, [Maps.results '\' Maps.unique '_J_KI_II.fig']);
 saveas(gcf, [Maps.results '\' Maps.unique '_J_KI_II.tif']);    close all

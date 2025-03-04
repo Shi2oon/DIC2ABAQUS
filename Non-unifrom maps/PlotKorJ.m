@@ -235,7 +235,8 @@ catch err
     J.Raw    = J.Raw(:)./offset;                % in K
     contrs   = length(J.Raw);           contrs = contrs - round(contrs/2); % in MPa
     K.Raw   = sqrt(abs(J.Raw(:))*E)*1e-6;
-    dic = ceil(-log10(mean(rmoutliers(J.Raw(contrs:end)))))+2;
+    dic = ceil(-log10(mean(rmoutliers(J.Raw(contrs:end)))))+2; 
+    if dic<1;   dic = 1; end
     J.true  = round(mean(rmoutliers(J.Raw(contrs:end))),dic);
     J.div   = round(std(rmoutliers(J.Raw(contrs:end)),1),dic);
     K.true = round(mean(rmoutliers(K.Raw(contrs:end))),dic);

@@ -1,4 +1,4 @@
-function [BCf, UnitOffset,MatP] = DIC2CAE_wNAN(MatP, Crack, resultsDir,angle_deg)
+function [BCf, UnitOffset,stepsize] = DIC2ABAQUS_wNAN(MatP, Crack, resultsDir,angle_deg)
 % create an abaqus model
 % you need >>
 % M4Nodes from the created mesh, thsi is nromally an output
@@ -20,18 +20,32 @@ function [BCf, UnitOffset,MatP] = DIC2CAE_wNAN(MatP, Crack, resultsDir,angle_deg
 %   Yield_offset
 %   yield (Yield Stress [Pa] )
 %   input_unit %'m', 'mm', 'um'
+%
 
-% function M4 = FE_OOM(alldata,ShapeFunOrder,resultsDir)
-% last update 30/11/2024.
 DICdata = importdata(resultsDir);
+% if the data is not regulary grides use the code below
+%{
+X = linspace(min(DICdata.data(:,1)),max(DICdata.data(:,1)),ceil(sqrt(length(DICdata.data(:,1)))));
+Y = linspace(min(DICdata.data(:,2)),max(DICdata.data(:,2)),ceil(sqrt(length(DICdata.data(:,2)))));
+[x,y] = meshgrid(X,Y);
+F = scatteredInterpolant(DICdata.data(:,1), DICdata.data(:,2), DICdata.data(:,3),'natural');
+Ux = F(x, y);
+F = scatteredInterpolant(DICdata.data(:,1), DICdata.data(:,2), DICdata.data(:,4),'natural');
+Uy = F(x, y);
+DICdata.data = [x(:),y(:),Ux(:),Uy(:)];
+%}
+
 [alldata,dataDot] = reshapeData(DICdata.data*MatP.pixel_size);
 MatP.stepsize = mean(unique(diff(dataDot.X1(1,:))));
+stepsize = MatP.stepsize;
 [resultsDir,Kl,~] = fileparts(resultsDir);
 resultsDir = [resultsDir '\' Kl];     mkdir(resultsDir);
 MatP.results = resultsDir;
 alldata = [alldata alldata(:,3)];
 
 %% Create the mesh object:
+% function M4 = FE_OOM(alldata,ShapeFunOrder,resultsDir)
+% last update 30/11/2024.
 fprintf ('Started Meshing ... ');
 if size(alldata,2) == 9
     % alldata = [X(:) Y(:) Z(:) e11(:) e22(:) e33(:) e12(:) e13(:) e23(:)];
@@ -95,6 +109,10 @@ if isempty(Crack)
     Crack = [xo(1) yo(1); xo(2) yo(2)];
 else
     xo = Crack(1);      yo = Crack(2);
+        xLin       = unique(dataDot.X1);
+    [~, index] = min(abs(xLin-xo(1)));      xo(1) = xLin(index);
+    yLin       = unique(dataDot.Y1);
+    [~, index] = min(abs(yLin-yo(1)));      yo(1) = yLin(index);
     Crack = [xo(1) yo(1); 0 0];
 end
 hold on; plot(xo(1),yo(1),'pk','LineStyle','-.','MarkerSize',14,...
@@ -112,6 +130,8 @@ M4Elements = M4.Elements;
 
 % unit set
 switch MatP.input_unit
+    case 'm'   % conver to m
+        UnitOffset = 1;
     case 'mm'   % conver to m
         UnitOffset = 1e-3;
     case 'um'	% conver to m
