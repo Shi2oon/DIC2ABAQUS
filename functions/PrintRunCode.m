@@ -42,6 +42,26 @@ PWD =pwd;           cd(folder)
 system(['abaqus cae ','noGUI','=Abaqus_script.py']); % Windows system
 % unix(['abaqus cae ','noGUI','=Abaqus_script.py']);   % Unix system
 
+% % unix(['abaqus cae ','noGUI','=Abaqus_script.py']);   % Unix system
+% Pause to ensure the script has time to execute
+pause(10); % Adjust the pause duration as needed
+
+% Close the Abaqus CAE GUI
+[status, cmdout] = system('tasklist /FI "IMAGENAME eq abq*.*" /FO CSV');
+
+if status == 0
+    % Parse the output to find the process ID (PID) of Abaqus CAE
+    lines = strsplit(cmdout, '\n');
+    for i = 2:length(lines)
+        if contains(lines{i}, 'abq')
+            tokens = strsplit(lines{i}, ',');
+            pid = str2double(tokens{2});
+            % Terminate the Abaqus CAE process
+            system(['taskkill /PID ' num2str(pid) ' /F']);
+        end
+    end
+end
+
 delete(fullfile(folder , [MatP.unique '.log']));
 delete(fullfile(folder , [MatP.unique '.msg']));
 delete(fullfile(folder , [MatP.unique '.prt']));
