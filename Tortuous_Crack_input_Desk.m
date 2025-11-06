@@ -18,7 +18,7 @@ Maps.unique       = 'Crack_in_Al_5052';
 % 'E' for Elastic material
 Maps.Mat = 'Al_5052';       %Material Name, do not use space
 % Poisson's ratio,          Young's Modulus [Pa],     
-Maps.nu    = 0.321;         Maps.E  = 70E9;         
+Maps.nu    = 0.321;         Maps.E  = 70E9;     
 Maps.type  = 'E';
 %{
 % if 'Ramberg-Osgood' type of material input
@@ -27,6 +27,7 @@ Maps.type  = 'E';
 %                                                   Yield Stress [Pa]
 Maps.Exponent = 26.67;  Maps.Yield_offset = 1.24;   Maps.yield = 4E9;
 Maps.type  = 'R';       Maps.E  = 210E9;            Maps.nu    = 0.3;
+
 
 % if 'Elastic-Anisotropic' you need to define the stifness tensor
 Maps.type  = 'A';
@@ -37,8 +38,30 @@ Maps.Stiffness = [  283  121  121   0   0   0
                     0    0    0     0   81  0
                     0    0    0     0   0   81]*1e9;
 Maps.nu    = 0.30;         
-Maps.E  = 210E9; for non-cubic materials
+Maps.E  = 210E9; % for non-cubic materials
+% Place EBSD orientation data in the same directory as this script
+% Data must be of the EBSDsquare type, in a .mat file
+% This script is compatibly with MTEX-6.0.0
+Maps.EBSDfilename = 'EBSDsquareExample.mat'; 
+
+
+% If using UMAT set the material properties in usermaterials.f
+% See OXFORD-UMAT documentation (https://github.com/TarletonGroup/CrystalPlasticity)
+Maps.type  = 'U';
+Maps.depvar = 50;
+Maps.materialID = 3; % (1) bcc, (2) fcc, (3) hcp
+Maps.PROPS = 0;
+Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT v3.1');
+% Place EBSD orientation data in the same directory as this script
+% Data must be of the EBSDsquare type, in a .mat file
+% This script is compatible with MTEX-6.0.0
+Maps.EBSDfilename = 'EBSDsquareExample.mat'; 
+Maps.modelThickness = 3e-3; % in microns
+Maps.zElems = 3; % number of elements through thickness
 %}
+
+
+
 tic
 % DIC2CAE_wNAN(MatP, Crack, resultsDir,angle_deg)
 % here "Crack" is the crack location starting with x corrdinates and then y
