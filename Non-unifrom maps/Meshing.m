@@ -71,5 +71,4 @@ function [X,Y,E11,E22,E12,Nodes,Elements,mesh] = Meshing(DATAin)
 %     E22(:,1) = [];                 E22(1,:) = [];
 %     E12 = reshape(DATAout(:,5),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
 %     E12(:,1) = [];                 E12(1,:) = [];
-
 end
