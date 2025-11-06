@@ -27,7 +27,7 @@ function [X,Y,E11,E22,E12,Nodes,Elements,mesh] = Meshing(DATAin)
     %% Assemble element nodes for FE
     for i=1:length(elnFE)
         el.n(i,:)   = elnFE(i,:);                   % nodes numbers
-        el.x(i,:)   = mesh.xy(1,elnFE(i,:));        % nodes corrdinates in X
+        el.x(i,:)   = mesh.xy(1,elnFE(i,:));        % nodes coordinates in X
         el.y(i,:)   = mesh.xy(2,elnFE(i,:));        % nodes coordinates in Y
         el.e11(i,:) = mesh.Data(1,elnFE(i,:));      % nodes coordinates in Data 1
         el.e22(i,:) = mesh.Data(2,elnFE(i,:));      % nodes coordinates in Data 2
@@ -71,4 +71,5 @@ function [X,Y,E11,E22,E12,Nodes,Elements,mesh] = Meshing(DATAin)
 %     E22(:,1) = [];                 E22(1,:) = [];
 %     E12 = reshape(DATAout(:,5),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
 %     E12(:,1) = [];                 E12(1,:) = [];
+
 end
