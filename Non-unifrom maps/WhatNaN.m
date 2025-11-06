@@ -13,7 +13,7 @@ if length(f)/length(E11) > 0.001
         % do nothing and use calculated outliner
     else
         LV1 = ones(size(LV1));
-        LV1(f) = 0;
+        LV1(f(:, 2)) = 0;
 	end
 	fprintf('\nOutliers percentage is %1.2f (> 0.1 allowed). I will now trim them out\n',...
         length(f)/length(E11)*100);
