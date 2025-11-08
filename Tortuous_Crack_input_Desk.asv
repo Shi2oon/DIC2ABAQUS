@@ -69,7 +69,6 @@ switch Maps.type
 
         % EBSD data required for this model
         Maps.EBSDfilename = 'EBSDsquareExample.mat';  % must be in same directory as this script
-        Maps.E  = 210e9; % Placeholder value for K calculation
 
         % Model geometry
         Maps.modelThickness = 3e-3; % microns
