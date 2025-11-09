@@ -1,4 +1,4 @@
-function datum = unifromMesh(datum)
+function datum = uniformMesh(datum)
 StepSize = [diff(unique(datum.X));diff(unique(datum.Y))];
 StepSize = min(round(StepSize,4));
     xLin  = min(round(datum.X(:),4)):StepSize:max(round(datum.X(:),4));

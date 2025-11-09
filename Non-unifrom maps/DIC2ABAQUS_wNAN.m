@@ -56,7 +56,7 @@ if size(alldata,2) == 9
     NNODE = 8;
     NGP   = 8;
     [M4.Nodes,M4.Elements,M4.Xall,M4.Yall,M4.Zall,M4.E11,M4.E22,M4.E33,M4.E12,...
-        M4.E13,M4.E23,M4.ScaleYN] = HexMeshAbaqus(alldata); % non unifrom data
+        M4.E13,M4.E23,M4.ScaleYN] = HexMeshAbaqus(alldata); % non uniform data
     saveas(gcf,[resultsDir '\Meshed ' num2str(NGP) '.fig']);
     saveas(gcf,[resultsDir '\Meshed ' num2str(NGP) '.png']); close
 else
@@ -71,7 +71,7 @@ else
         alldata = [alldata(:, [1,2]), z_coords_all, alldata(:, [3,4,3])];        
         
         [M4.Xall,M4.Yall,M4.E11,M4.E22,M4.E12,M4.Nodes,M4.Elements] = ...
-            MeshPlaneStress3D(alldata); % non unifrom data  
+            MeshPlaneStress3D(alldata); % non uniform data  
     else    
         NDIM = 2;      % 2D
         alldata = sortrows(alldata,[1,2]);
@@ -80,7 +80,7 @@ else
         %     fprintf('FE_Mesh_Generator failed ! .. Meshing ');
 
         [M4.Xall,M4.Yall,M4.E11,M4.E22,M4.E12,M4.Nodes,M4.Elements] = ...
-            Meshing(alldata);  % support both unifrom and non unifrom data
+            Meshing(alldata);  % support both uniform and non uniform data
     end
     [M4.Elements,M4.E11,M4.E22,M4.E12,M4.X1,M4.X2,M4.ScaleYN] = ... % remove outliers
         WhatNaN(M4.Elements,M4.E11,M4.E22,M4.E12,M4.Xall,M4.Yall);

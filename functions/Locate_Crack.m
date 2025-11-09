@@ -42,7 +42,7 @@ quest            = 'Do you want to crop the map?';
 answer           = questdlg(quest,'Boundary Condition','Y','N', opts);
 if strcmpi(answer,'Y') % crop data
     [dat] = Cropping10(datum.X,datum.Y,datum.Ux, datum.Uy);
-    dat = unifromMesh(dat);
+    dat = uniformMesh(dat);
     datum.X = dat.X;    datum.Y = dat.Y; 
     datum.Ux = dat.Ux;  datum.Uy = dat.Uy;
 end

@@ -4,7 +4,7 @@
 % as a .dat file,
 
 clc;clear;close all
-addpath(genpath([pwd '\Non-unifrom maps']));
+addpath(genpath([pwd '\Non-uniform maps']));
 addpath(genpath([pwd '\Miscellaneous']));
 resultsDir = fullfile(pwd, 'Miscellaneous','Tortuous_Crack_Data.dat'); % file location
 Maps.results = erase(resultsDir,'.dat');
