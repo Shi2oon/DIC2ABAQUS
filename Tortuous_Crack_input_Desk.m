@@ -34,7 +34,7 @@ switch Maps.type
     case 'R'  % Ramberg–Osgood Material
         % The hardening exponent must be > 1
         % Reference: https://classes.engineering.wustl.edu/2009/spring/mase5513/abaqus/docs/v6.6/books/stm/default.htm?startat=ch04s03ath111.html
-        Maps.Mat = 'Steel';
+        Maps.Mat = 'Al_5052';
         Maps.E = 210e9;             % Young's Modulus [Pa]
         Maps.nu = 0.3;              % Poisson's ratio
         Maps.Exponent = 26.67;      % Hardening exponent
@@ -43,7 +43,7 @@ switch Maps.type
 
     % --------------------------------------------------------------------
     case 'A'  % Elastic–Anisotropic Material
-        Maps.Mat = 'Anisotropic_Sample';
+        Maps.Mat = 'Anisotropic_Al_5052';
         Maps.Stiffness = [283 121 121 0 0 0;
                           121 283 121 0 0 0;
                           121 121 283 0 0 0;
@@ -61,15 +61,19 @@ switch Maps.type
         % See OXFORD-UMAT documentation: https://github.com/TarletonGroup/CrystalPlasticity
         % Material properties defined in usermaterials.f
         % Requires
-        Maps.Mat = 'UserDefined';
+        Maps.Mat = 'UserDefined_Al_5052';
         Maps.depvar = 50;           % Number of user-defined state variables
         Maps.materialID = 1;        % (1) bcc, (2) fcc, (3) hcp
         Maps.PROPS = 0;             % Placeholder for UMAT property array
-        Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT\OXFORD-UMAT v3.1');
+        Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT\OXFORD-UMAT v3.1\OXFORD-UMAT.f');
+        Maps.abqCmdShortcutPath = ...
+            'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dassault Systemes SIMULIA Abaqus CAE 2017\Abaqus Command.lnk'; 
+        % Full path to abaqus command shortcut. Abaqus should be linked with Fortran compiler
+        % Change from default if multiple Abaqus versions are installed
 
         % EBSD data required for this model
         Maps.EBSDfilename = 'EBSDsquareExample.mat';  % must be in same directory as this script
-        Maps.E  = 210e9; % Placeholder value for K calculation
+        Maps.E  = 210e9; % Placeholder value
 
         % Model geometry
         Maps.modelThickness = 3e-3; % microns
