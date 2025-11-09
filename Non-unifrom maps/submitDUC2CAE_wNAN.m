@@ -1,4 +1,4 @@
-function submitDUC2CAE_wNAN(fileID,folder,Unique)
+function submitDUC2CAE_wNAN(fileID,folder,Unique,Type)
 fprintf(fileID,'from part import * \n');
 fprintf(fileID,'from material import * \n');
 fprintf(fileID,'from section import * \n');
@@ -26,7 +26,11 @@ fprintf(fileID,'    memory=90, memoryUnits=PERCENTAGE, model="%s", modelPrint=OF
 fprintf(fileID,'    multiprocessingMode=DEFAULT, name="Job-%s", nodalOutputPrecision=SINGLE,  \n', Unique);
 fprintf(fileID,'    numCpus=1, numGPUs=0, queue=None, resultsFormat=ODB, scratch="", type= \n');
 fprintf(fileID,'    ANALYSIS, userSubroutine="", waitHours=0, waitMinutes=0) \n');
-fprintf(fileID,'mdb.jobs["Job-%s"].submit(consistencyChecking=OFF) \n', Unique);
+if Type == 'U' % if umat. ifort must be called before running the job
+    fprintf(fileID,'mdb.jobs["Job-%s"].writeInput(consistencyChecking=OFF) \n', Unique);
+else
+    fprintf(fileID,'mdb.jobs["Job-%s"].submit(consistencyChecking=OFF) \n', Unique);
+end
 % wait for the job to be complete
 % fprintf(fileID,'mdb.jobs["%s"].waitForCompletion(); \n',Unique);
 % % read output database to retrieve the J-integral values
