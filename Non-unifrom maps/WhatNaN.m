@@ -32,7 +32,7 @@ end
 
 function [LV1] = RemoveOutNaN(tmp)
 tmp(tmp==0) = NaN;    
-mdn = nanmedian(tmp(:));
+mdn = median(tmp(:), 'omitnan');
 tmp(isnan(tmp)) = mdn;
 LV1 = isoutlier(tmp,'median',2); 
 LV1 = max(LV1);
