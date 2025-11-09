@@ -475,7 +475,7 @@ if  MatP.type == 'A'
         Mate(5*i - 3)  =  cellstr('*Elastic, type=ANISOTROPIC');
         
         C = MatP.Stiffness;
-        if C(1,1) < 1e6; 	C = C.*1e9;       	disp('Check Modulus Units .. Corretced');    end
+        if C(1,1) < 1e6; 	C = C.*1e9;       	disp('Check Modulus Units .. Corrected');    end
         C = C.*UnitOffset^2;
         ori = EBSDinterp.orientations(i);
         phi1 = rad2deg(ori.phi1);
@@ -501,7 +501,7 @@ if  MatP.type == 'A'
 
 elseif MatP.type == 'R'
     Mate(6)  =  cellstr('*Deformation Plasticity');
-    if MatP.E < 1e6;    MatP.E=MatP.E*1e9;	disp('Check Modulus Units .. Corretced');    end
+    if MatP.E < 1e6;    MatP.E=MatP.E*1e9;	disp('Check Modulus Units .. Corrected');    end
     MatP.E = MatP.E*UnitOffset^2;
     MatP.yield=MatP.yield*UnitOffset^2;
     Mate(7)  =  cellstr([' ',num2str(MatP.E),', ',num2str(MatP.nu),...
@@ -510,7 +510,7 @@ elseif MatP.type == 'R'
 
 elseif MatP.type == 'E'
     Mate(6)  =  cellstr('*Elastic');
-    if MatP.E < 1e6;    MatP.E=MatP.E*1e9;	disp('Check Modulus Units .. Corretced');    end
+    if MatP.E < 1e6;    MatP.E=MatP.E*1e9;	disp('Check Modulus Units .. Corrected');    end
     MatP.E = MatP.E*UnitOffset^2;
     Mate(7)  =  cellstr([' ',num2str(MatP.E),', ',num2str(MatP.nu)]);
     Mate(8)  =  cellstr('** ');
@@ -685,4 +685,15 @@ end
 fclose(fileID);
 fprintf('Done\nCheck %s for the abaqus .inp model\n',BCf);
 BCf = erase(BCf,'.inp');
+
+%% Copy UMAT files to results directory
+
+if MatP.type == 'U'
+    UMATfolderpath = fileparts(MatP.UMATfilepath);
+    copyfile(UMATfolderpath, resultsDir)
 end
+
+
+end
+
+
