@@ -65,7 +65,7 @@ switch Maps.type
         Maps.depvar = 50;           % Number of user-defined state variables
         Maps.materialID = 1;        % (1) bcc, (2) fcc, (3) hcp
         Maps.PROPS = 0;             % Placeholder for UMAT property array
-        Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT\OXFORD-UMAT v3.1\OXFORD-UMAT.f');
+        Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT\OXFORD-UMAT v3.3\OXFORD-UMAT.f');
         Maps.abqCmdShortcutPath = ...
             'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dassault Systemes SIMULIA Abaqus CAE 2017\Abaqus Command.lnk'; 
         % Full path to abaqus command shortcut. Abaqus should be linked with Fortran compiler
