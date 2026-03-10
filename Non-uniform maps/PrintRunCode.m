@@ -43,8 +43,8 @@ if MatP.type == 'U'
         cmd = [cmd ' ' args];               % append args if present
     end
 
-% % % % %     system([cmd,' && ','abaqus cae ','noGUI','=Abaqus_script.py'])
-% % % % %     pause(10)
+    system([cmd,' && ','abaqus cae ','noGUI','=Abaqus_script.py'])
+    pause(10)
 end
 
 % Close the Abaqus CAE GUI
