@@ -1,7 +1,7 @@
 function CAE = PrintRunCode(MatP,folder)
 fileid = fullfile(folder, 'Abaqus_script.py');
 fileID = fopen(fileid,'w');
-submitDUC2CAE_wNAN(fileID,folder,MatP.unique,MatP.type)
+submitDUC2CAE_wNAN(fileID,folder,MatP.unique,MatP.type, MatP)
 % printTiffs(fileID,folder,'N',MatP.unique,2);   %% save tiff images for U and S
 % printTiffs(fileID,folder,'D',MatP.unique,2);   %% save tiff images for deformaed U and S
 fclose(fileID);
@@ -9,11 +9,12 @@ fclose(fileID);
 %%
 PWD =pwd;           cd(folder)
 
-system(['abaqus cae ','noGUI','=Abaqus_script.py']); % Windows system
-% % unix(['abaqus cae ','noGUI','=Abaqus_script.py']);   % Unix system
-% Pause to ensure the script has time to execute
-pause(10); % Adjust the pause duration as needed
-
+if MatP.type ~= 'U'
+    system(['abaqus cae ','noGUI','=Abaqus_script.py']); % Windows system
+    % % unix(['abaqus cae ','noGUI','=Abaqus_script.py']);   % Unix system
+    % Pause to ensure the script has time to execute
+    pause(10); % Adjust the pause duration as needed
+end
 
 if MatP.type == 'U'
     % PowerShell script to find ifort target and argument from abaqus shortcut
@@ -41,15 +42,9 @@ if MatP.type == 'U'
     if ~isempty(args)
         cmd = [cmd ' ' args];               % append args if present
     end
-%     fprintf('Command for cmd.exe:\n%s\n', cmd);
 
-    % Create command to run job
-    [~, UMATname, ext] = fileparts(MatP.UMATfilepath);
-    jobCmd = ['abaqus job=Job-',MatP.unique,' user=',UMATname,ext];
-
-    % run job
-    cmd = [cmd, ' && ' jobCmd];
-    system(cmd);
+% % % % %     system([cmd,' && ','abaqus cae ','noGUI','=Abaqus_script.py'])
+% % % % %     pause(10)
 end
 
 % Close the Abaqus CAE GUI
@@ -67,13 +62,22 @@ if status == 0
         end
     end
 end
-delete([folder '\Job-' MatP.unique '.log']);
-delete([folder '\Job-' MatP.unique '.msg']);
-delete([folder '\Job-' MatP.unique '.prt']);
-delete([folder '\Job-' MatP.unique '.sim']);
-delete([folder '\Job-' MatP.unique '.sta']);
-delete([folder '\Job-' MatP.unique '.com']);
-delete([folder '\Job-' MatP.unique 'Done.tmp']);
+
+choice = questdlg('Delete job files except the ODB and DAT file?', ...
+                  'Confirm Deletion', ...
+                  'Yes','No','No');
+
+if strcmp(choice,'Yes')
+    delete([folder '\Job-' MatP.unique '.log']);
+    delete([folder '\Job-' MatP.unique '.msg']);
+    delete([folder '\Job-' MatP.unique '.prt']);
+    delete([folder '\Job-' MatP.unique '.sim']);
+    delete([folder '\Job-' MatP.unique '.sta']);
+    delete([folder '\Job-' MatP.unique '.com']);
+    delete([folder '\Job-' MatP.unique 'Done.tmp']);
+    delete(fullfile(folder,'*.for')); % delete any umats
+end
+
 if ~exist([MatP.unique '.rpt'],'file')
     fprintf('\nYou can find a python script to run in Abaqus in\n%s\n',folder);
 end

@@ -1,5 +1,5 @@
-% This the input desk for cruved or non striaght cracks where you need to
-% exclude the crack geomtery first and save the displacement field with the
+% This the input desk for curved or non-straight cracks where you need to
+% exclude the crack geometry first and save the displacement field with the
 % excluded crack geomtry in a format you can use with this code, preferably
 % as a .dat file,
 
@@ -12,9 +12,12 @@ Maps.input_unit     = 'um';         % meter (m) or milmeter (mm) or micrometer(u
 Maps.pixel_size   = 1e-3;           % if DIC values are in pixel, 1 if in physical units;
 Maps.Operation    = 'DIC';          % Strain, xED = xEBSD, DIC = Displacement
 Maps.stressstat   = 'plane_stress'; % 'plane_stress' OR 'plane_strain'
+Maps.modelDimension = '2D';         % '2D' OR '3D'. 3D models are extruded from 2D
+    Maps.modelThickness = 3e-3;     % Model thickness if 3D
+    Maps.zElems = 3;                % Elements through thickness if 3D
 Maps.unique       = 'Crack_in_Al_5052';
 
-%% INPUT MATERIAL PROPERTIES AND DATA
+%% INPUT MATERIAL PROPERTIES AND DATA       
 % Select material type:
 %   'E' = Elastic
 %   'R' = Ramberg–Osgood
@@ -60,11 +63,11 @@ switch Maps.type
     case 'U'  % UMAT (User Material)
         % See OXFORD-UMAT documentation: https://github.com/TarletonGroup/CrystalPlasticity
         % Material properties defined in usermaterials.f
-        % Requires
         Maps.Mat = 'UserDefined_Al_5052';
         Maps.depvar = 50;           % Number of user-defined state variables
         Maps.materialID = 1;        % (1) bcc, (2) fcc, (3) hcp
-        Maps.PROPS = 0;             % Placeholder for UMAT property array
+        Maps.PROPS = 0;             % NPROPS value for OXFORD-UMAT
+        
         Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT\OXFORD-UMAT v3.3\OXFORD-UMAT.f');
         Maps.abqCmdShortcutPath = ...
             'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dassault Systemes SIMULIA Abaqus CAE 2017\Abaqus Command.lnk'; 
@@ -75,9 +78,7 @@ switch Maps.type
         Maps.EBSDfilename = 'EBSDsquareExample.mat';  % must be in same directory as this script
         Maps.E  = 210e9; % Placeholder value
 
-        % Model geometry
-        Maps.modelThickness = 3e-3; % microns
-        Maps.zElems = 3;            % Elements through thickness
+
 
     % --------------------------------------------------------------------
     otherwise
@@ -106,7 +107,7 @@ save([Maps.results '\' Maps.unique '_DIC2CAE.mat'],'Maps','J','KI','KII',...
     'K','Direction');
 
 %% changing the crack direction
-load([Maps.results '_DIC2CAE.mat'],'MatP','Direction');
+load([Maps.results '\' Maps.unique '_DIC2CAE.mat'],'MatP','Direction');
 fprintf('\nRecommended virtual crack extension for max. J-integral direction is %.1f ± %.1f\t\n',...
     round(Direction.true,1), round(Direction.div,1))
 Ans = questdlg_timer(60,['Virtual crack extension is ' ...
