@@ -63,7 +63,7 @@ else
     % alldata = [X(:) Y(:) e11(:) e22(:) e12(:)];
     
     alldata2Dsze = size(alldata, 1);
-    if MatP.type == 'U'
+    if MatP.modelDimension == '3D'
         NDIM  = 3;              % 3D
         z_coords = [0:MatP.zElems]'*MatP.modelThickness/MatP.zElems;
         z_coords_all = kron(z_coords, ones(size(alldata, 1), 1));
@@ -235,7 +235,7 @@ disp('3.  Writing elements');
 Ele = cell(NElem + 1,1);
 if strcmpi(MatP.stressstat, 'plane_strain')
     Ele(1)  =  cellstr('*ELEMENT, ELSET=Set_All, TYPE=CPE4');
-elseif MatP.type == 'U'
+elseif MatP.modelDimension == '3D'
     Ele(1)  =  cellstr('*ELEMENT, ELSET=Set_All, TYPE=C3D8');
 else
     Ele(1)  =  cellstr('*ELEMENT, ELSET=Set_All, TYPE=CPS4');
@@ -690,7 +690,65 @@ BCf = erase(BCf,'.inp');
 
 if MatP.type == 'U'
     UMATfolderpath = fileparts(MatP.UMATfilepath);
-    copyfile(UMATfolderpath, resultsDir)
+
+    % Find only .f and .for files in the UMAT folder (including subfolders)
+    srcFiles = [ ...
+        dir(fullfile(UMATfolderpath,'**','*.f'));
+        dir(fullfile(UMATfolderpath,'**','*.for'))
+    ];
+
+    % Copy only those files
+    for i = 1:length(srcFiles)
+        srcPath = fullfile(srcFiles(i).folder, srcFiles(i).name);
+
+        % Recreate relative folder structure
+        relPath = strrep(srcFiles(i).folder, UMATfolderpath, '');
+        destFolder = fullfile(resultsDir, relPath);
+
+        if ~exist(destFolder,'dir')
+            mkdir(destFolder)
+        end
+
+        copyfile(srcPath, fullfile(destFolder, srcFiles(i).name))
+    end
+
+    % Find all .f files in the destination directory
+    fFiles = dir(fullfile(resultsDir,'**','*.f'));
+
+    renamedFiles = strings(0);
+
+    % Rename .f to .for
+    for k = 1:length(fFiles)
+        oldName = fullfile(fFiles(k).folder, fFiles(k).name);
+        [~, name, ~] = fileparts(fFiles(k).name);
+        newName = fullfile(fFiles(k).folder, [name '.for']);
+
+        movefile(oldName,newName)
+        renamedFiles(end+1) = name; %#ok<SAGROW>
+    end
+
+    % If any files were renamed, update include statements
+    if ~isempty(renamedFiles)
+
+        codeFiles = [ ...
+            dir(fullfile(resultsDir,'**','*.for'));
+            dir(fullfile(resultsDir,'**','*.f90'));
+            dir(fullfile(resultsDir,'**','*.f'));
+        ];
+
+        for i = 1:length(codeFiles)
+            filePath = fullfile(codeFiles(i).folder, codeFiles(i).name);
+
+            txt = fileread(filePath);
+
+            % Replace include "NAME.f" with include "NAME.for"
+            txt = regexprep(txt,'include\s+"([^"]+)\.f"','include "$1.for"');
+
+            fid = fopen(filePath,'w');
+            fwrite(fid,txt);
+            fclose(fid);
+        end
+    end
 end
 
 
