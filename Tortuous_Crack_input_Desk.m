@@ -67,12 +67,13 @@ switch Maps.type
         Maps.depvar = 50;           % Number of user-defined state variables
         Maps.materialID = 1;        % (1) bcc, (2) fcc, (3) hcp
         Maps.PROPS = 0;             % NPROPS value for OXFORD-UMAT
-        
+
+        % File path of main UMAT. Necessary environment files should be included in the same folder
         Maps.UMATfilepath = fullfile(pwd, 'OXFORD-UMAT\OXFORD-UMAT v3.3\OXFORD-UMAT.f');
+
+        % Full path to abaqus command shortcut. Abaqus should be linked with Fortran compiler        
         Maps.abqCmdShortcutPath = ...
             'C:\ProgramData\Microsoft\Windows\Start Menu\Programs\Dassault Systemes SIMULIA Abaqus CAE 2017\Abaqus Command.lnk'; 
-        % Full path to abaqus command shortcut. Abaqus should be linked with Fortran compiler
-        % Change from default if multiple Abaqus versions are installed
 
         % EBSD data required for this model
         Maps.EBSDfilename = 'EBSDsquareExample.mat';  % must be in same directory as this script
