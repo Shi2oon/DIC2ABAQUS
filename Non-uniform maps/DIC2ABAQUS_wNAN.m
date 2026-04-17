@@ -742,7 +742,8 @@ if MatP.type == 'U'
             txt = fileread(filePath);
 
             % Replace include "NAME.f" with include "NAME.for"
-            txt = regexprep(txt,'include\s+"([^"]+)\.f"','include "$1.for"');
+            txt = regexprep(txt,'include\s+"([^"]+)\.f"','include "$1.for"','ignorecase');
+            txt = regexprep(txt,"include\s+'([^']+)\.f'","include '$1.for'",'ignorecase');
 
             fid = fopen(filePath,'w');
             fwrite(fid,txt);
