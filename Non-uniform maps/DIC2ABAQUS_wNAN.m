@@ -750,8 +750,16 @@ if MatP.type == 'U'
             fclose(fid);
         end
     end
+    
+    % find and copy environment file if it exists
+    envFile = [dir(fullfile(UMATfolderpath,'**','*.env'))];
+    for i = 1:length(envFile)
+        srcPath = fullfile(envFile(i).folder, envFile(i).name);
+        relPath = strrep(envFile(i).folder, UMATfolderpath, '');
+        destFolder = fullfile(resultsDir, relPath);
+        copyfile(srcPath, fullfile(destFolder, envFile(i).name))
+    end
 end
-
 
 end
 
