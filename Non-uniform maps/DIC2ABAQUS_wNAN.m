@@ -87,7 +87,17 @@ else
     
     % Mesh plot
     %{
-fill(M4.X1,M4.X2,'w');
+figure; patch( ...
+    'Faces', M4.Elements(:,2:5), ...
+    'Vertices', M4.Nodes(:,2:3), ...
+    'FaceColor', 'none');
+
+axis equal;
+xlabel('x');
+ylabel('y');
+title('Retained DIC finite-element topology');
+
+figure; fill(M4.X1,M4.X2,'w');
 set(gca,'Ydir','normal');
 s1.XDir='reverse';   s1.YDir='reverse'; axis image;axis xy; colormap jet;%axis off;
 xlabel('X[\mum]');  	ylabel('Y[\mum]');
