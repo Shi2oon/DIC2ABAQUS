@@ -1,74 +1,155 @@
-function [X,Y,E11,E22,E12,Nodes,Elements,mesh] = Meshing(DATAin)
-% if DIM == 2 && strcmp(DATATYPE,'Strain')
-    tmp(1:2,:)   = DATAin(:,1:2)'; % x and y
-    tmp(3:size(DATAin,2),:)   = DATAin(:,3:end)'; % data
-    %Guess the dimensions of the image
-    mesh.winodow = [length(unique(DATAin(:,1),'first')),length(unique(DATAin(:,2),'first'))];
-    % sort the dataset
-    tmp         = sortrows(tmp',[1 2])';
-    mesh.xy     = tmp(1:2,:);
-    mesh.Data   = tmp(3:end,:);
-    mesh.winFE  = [1 1; mesh.winodow(1) mesh.winodow(2)]; % take 2 elements fromc coners
+function [X, Y, E11, E22, E12, Nodes, Elements, mesh] = Meshing(DATAin)
+% MESHING
+% Generates a quadrilateral mesh from non-uniform or incomplete DIC maps.
+%
+% Expected columns:
+%   1: x-coordinate
+%   2: y-coordinate
+%   3: E11
+%   4: E22
+%   5: E12, optional
+%
+% An element is created only when:
+%   1. All four corner nodes exist.
+%   2. All required nodal DIC quantities are finite.
+%
+% Element labels are always consecutive from 1 to number of elements.
 
-    %% Mesh for nodes & elements
-    %Number of elements in the FE mesh
-    szelnFE = (mesh.winFE(2,2)-mesh.winFE(1,2))*(mesh.winFE(2,1)-mesh.winFE(1,1));
-    count   = 0;
-    %For each FE element, find constitutive DIC nodes
-    elnFE = zeros(szelnFE,4);
-    for c =  mesh.winFE(1,2):1:mesh.winFE(2,2)-1
-        for r =  mesh.winFE(1,1):1:mesh.winFE(2,1)-1
-            count = count + 1;
-            elnFE(count,:) = [c+(r)*mesh.winodow(2),     c+1+(r)*mesh.winodow(2), ...
-                              c+1+(r-1)*mesh.winodow(2), c+(r-1)*mesh.winodow(2)];
+    if nargin ~= 1
+        error('Meshing requires one input array.');
+    end
+
+    if size(DATAin, 2) < 4
+        error(['DATAin must contain at least four columns: ', ...
+               'x, y, E11 and E22.']);
+    end
+
+    if any(~isfinite(DATAin(:,1:2)), 'all')
+        error('The x and y coordinates must be finite.');
+    end
+
+    % Sort by x first, then y, matching the original implementation.
+    DATAin = sortrows(DATAin, [1, 2]);
+
+    xValues = unique(DATAin(:,1), 'sorted');
+    yValues = unique(DATAin(:,2), 'sorted');
+
+    nX = numel(xValues);
+    nY = numel(yValues);
+
+    if nX < 2 || nY < 2
+        error('At least two distinct x and y coordinates are required.');
+    end
+
+    % Associate each node with its position in the Cartesian coordinate map.
+    [~, xIndex] = ismember(DATAin(:,1), xValues);
+    [~, yIndex] = ismember(DATAin(:,2), yValues);
+
+    nodeMap = zeros(nY, nX);
+
+    for nodeID = 1:size(DATAin,1)
+
+        row = yIndex(nodeID);
+        col = xIndex(nodeID);
+
+        if nodeMap(row,col) ~= 0
+            error(['Duplicate DIC coordinate detected at x = %.12g, ', ...
+                   'y = %.12g.'], ...
+                   DATAin(nodeID,1), DATAin(nodeID,2));
+        end
+
+        nodeMap(row,col) = nodeID;
+    end
+
+    % A node is suitable for meshing only when its required DIC data exist.
+    requiredData = DATAin(:,3:4);
+
+    if size(DATAin,2) >= 5
+        requiredData = DATAin(:,3:5);
+    end
+
+    validNode = all(isfinite(requiredData), 2);
+
+    maximumNumberOfElements = (nX - 1) * (nY - 1);
+    connectivity = zeros(maximumNumberOfElements, 4);
+
+    elementCounter = 0;
+
+    for ix = 1:(nX - 1)
+
+        for iy = 1:(nY - 1)
+
+            % Preserve the node ordering used by the original Meshing.m:
+            %
+            % node 4 -------- node 3
+            %   |                |
+            %   |                |
+            % node 1 -------- node 2
+            %
+            % In coordinate terms:
+            % 1: right-bottom
+            % 2: right-top
+            % 3: left-top
+            % 4: left-bottom
+
+            elementNodes = [ ...
+                nodeMap(iy,     ix + 1), ...
+                nodeMap(iy + 1, ix + 1), ...
+                nodeMap(iy + 1, ix), ...
+                nodeMap(iy,     ix)];
+
+            % Do not create an element if one or more coordinate nodes
+            % are absent from the DIC map.
+            if any(elementNodes == 0)
+                continue;
+            end
+
+            % Do not create an element if any corner contains invalid data.
+            if any(~validNode(elementNodes))
+                continue;
+            end
+
+            elementCounter = elementCounter + 1;
+            connectivity(elementCounter,:) = elementNodes;
         end
     end
 
-    %% Assemble element nodes for FE
-    for i=1:length(elnFE)
-        el.n(i,:)   = elnFE(i,:);                   % nodes numbers
-        el.x(i,:)   = mesh.xy(1,elnFE(i,:));        % nodes coordinates in X
-        el.y(i,:)   = mesh.xy(2,elnFE(i,:));        % nodes coordinates in Y
-        el.e11(i,:) = mesh.Data(1,elnFE(i,:));      % nodes coordinates in Data 1
-        el.e22(i,:) = mesh.Data(2,elnFE(i,:));      % nodes coordinates in Data 2
-        if size(DATAin,2)==5
-            el.e12(i,:) = mesh.Data(3,elnFE(i,:));	% nodes coordinates in Data 3
-        end
+    connectivity = connectivity(1:elementCounter,:);
+
+    if isempty(connectivity)
+        error(['No valid quadrilateral elements were generated. ', ...
+               'Check the DIC coordinates and missing-data mask.']);
     end
 
-    usf_nod  = unique(el.n(:));             usf_nod(usf_nod==0) = [];
-%     mesh.UFE = mesh.xy(:,usf_nod);
-%     mesh.dFE = mesh.Data(:,usf_nod);
-    % Remove 0 disp elements
-    msk      = ~sum(el.n,2)==0;
-    el.n     = el.n(msk,:);
-    el.x     = el.x(msk,:);             X   = el.x';
-    el.y     = el.y(msk,:);             Y   = el.y';
-    el.e11   = el.e11(msk,:);           E11 = el.e11';
-    el.e22   = el.e22(msk,:);           E22 = el.e22';
-    if size(DATAin,2)==5
-        el.e12   = el.e12(msk,:);           E12 = el.e12';
+    nodeLabels = (1:size(DATAin,1)).';
+    elementLabels = (1:elementCounter).';
+
+    Nodes = [nodeLabels, DATAin(:,1:2)];
+    Elements = [elementLabels, connectivity];
+
+    % Arrange element quantities as:
+    % four local nodes by number of elements.
+    X = reshape(DATAin(connectivity(:),1), size(connectivity)).';
+    Y = reshape(DATAin(connectivity(:),2), size(connectivity)).';
+
+    E11 = reshape(DATAin(connectivity(:),3), size(connectivity)).';
+    E22 = reshape(DATAin(connectivity(:),4), size(connectivity)).';
+
+    if size(DATAin,2) >= 5
+        E12 = reshape(DATAin(connectivity(:),5), size(connectivity)).';
     else
         E12 = [];
     end
 
-    %% other info 
-%     DATAout    = [mesh.UFE' mesh.dFE'];
-%     mesh.elFE  = size(el.n,1);
-%     mesh.nFE   = length(unique(el.n));
-    NumberEl   = 1:length(DATAin);
-    Nodes      = [NumberEl(:) DATAin(:,1:2)];
-    NumberEl   = 1:length(el.n);
-    Elements   = [NumberEl(:) el.n];
-    
-%     X   = reshape(DATAout(:,1),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
-%     X(:,1) = [];                   X(1,:) = [];
-%     Y   = reshape(DATAout(:,2),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
-%     Y(:,1) = [];                   Y(1,:) = [];
-%     E11 = reshape(DATAout(:,3),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
-%     E11(:,1) = [];                 E11(1,:) = [];
-%     E22 = reshape(DATAout(:,4),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
-%     E22(:,1) = [];                 E22(1,:) = [];
-%     E12 = reshape(DATAout(:,5),length(unique(DATAout(:,2))),length(unique(DATAout(:,1))));
-%     E12(:,1) = [];                 E12(1,:) = [];
+    % Preserve the original misspelled field name for compatibility.
+    mesh.winodow = [nX, nY];
+
+    % Also provide a correctly spelled version for future use.
+    mesh.window = [nX, nY];
+
+    mesh.xy = DATAin(:,1:2).';
+    mesh.Data = DATAin(:,3:end).';
+    mesh.nodeMap = nodeMap;
+    mesh.validNode = validNode;
+    mesh.connectivity = connectivity;
 end
