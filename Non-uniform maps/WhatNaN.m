@@ -1,39 +1,165 @@
-function [Elements,E11,E22,E12,X,Y,answer] = WhatNaN(Elements,E11,E22,E12,X,Y)
-[f(:,1),f(:,2)]=ind2sub(size(E11(1,:)),find(isnan(E11(1,:))));
-if length(f)/length(E11) == 0
-    clearvars f
-    [f(:,1),f(:,2)]=ind2sub(size(E11(1,:)),find(E11(1,:)==0));
-end
-if length(f)/length(E11) > 0.001
-[LV1] = RemoveOutNaN(E11); %CHECK FOR OUTLIERS
-[f1(:,1),f1(:,2)] = ind2sub(size(LV1),find(LV1==0)); % check how many we found
-    % check if the opercentage is acceptable
-	if length(f1)/length(LV1) > 0.15 && length(f1)/length(LV1) < 0.85 ...
-            &&  abs(length(f)/length(E11)-length(f1)/length(LV1)) < 0.15
-        % do nothing and use calculated outliner
+function [Elements, E11, E22, E12, X, Y, answer] = ...
+    WhatNaN(Elements, E11, E22, E12, X, Y)
+% WHATNAN
+% Removes elements containing non-finite nodal data and renumbers the
+% retained elements consecutively.
+%
+% Supports:
+%   2D quadrilateral elements:
+%       Elements = [element ID, node 1, node 2, node 3, node 4]
+%
+%   3D brick elements:
+%       Elements = [element ID, node 1, ..., node 8]
+%
+% Zero is treated as a valid physical value. Only NaN and Inf values cause
+% an element to be removed.
+
+    %% Basic validation
+
+    if isempty(Elements)
+        error('Elements is empty.');
+    end
+
+    numberOfElements = size(Elements, 1);
+    numberOfElementNodes = size(Elements, 2) - 1;
+
+    if ~ismember(numberOfElementNodes, [4, 8])
+        error(['Unsupported element connectivity. Elements has %d columns. ', ...
+               'Expected 5 columns for a 2D quadrilateral or 9 columns ', ...
+               'for a 3D brick.'], size(Elements, 2));
+    end
+
+    validateElementArray( ...
+        E11, numberOfElements, numberOfElementNodes, 'E11');
+
+    validateElementArray( ...
+        E22, numberOfElements, numberOfElementNodes, 'E22');
+
+    validateElementArray( ...
+        X, numberOfElements, numberOfElementNodes, 'X');
+
+    validateElementArray( ...
+        Y, numberOfElements, numberOfElementNodes, 'Y');
+
+    if ~isempty(E12)
+        validateElementArray( ...
+            E12, numberOfElements, numberOfElementNodes, 'E12');
+    end
+
+    %% Find invalid elements
+
+    invalidElement = ...
+        any(~isfinite(E11), 1) | ...
+        any(~isfinite(E22), 1) | ...
+        any(~isfinite(X), 1)   | ...
+        any(~isfinite(Y), 1);
+
+    if ~isempty(E12)
+        invalidElement = ...
+            invalidElement | any(~isfinite(E12), 1);
+    end
+
+    % Ensure logical row vector.
+    invalidElement = reshape(invalidElement, 1, []);
+
+    if numel(invalidElement) ~= numberOfElements
+        error(['The generated invalid-element mask has the wrong size. ', ...
+               'Expected %d values but obtained %d.'], ...
+               numberOfElements, numel(invalidElement));
+    end
+
+    keepElement = ~invalidElement;
+
+    %% Remove invalid elements and corresponding element data
+
+    Elements = Elements(keepElement, :);
+
+    E11 = E11(:, keepElement);
+    E22 = E22(:, keepElement);
+
+    X = X(:, keepElement);
+    Y = Y(:, keepElement);
+
+    if ~isempty(E12)
+        E12 = E12(:, keepElement);
+    end
+
+    if isempty(Elements)
+        error(['All elements were removed because every element contained ', ...
+               'at least one NaN or Inf value.']);
+    end
+
+    %% Renumber the retained elements
+
+    % The first column contains the Abaqus element label.
+    Elements(:, 1) = (1:size(Elements, 1)).';
+
+    %% Final consistency checks
+
+    retainedElementCount = size(Elements, 1);
+
+    assert(size(E11, 2) == retainedElementCount, ...
+        'E11 is inconsistent with the retained element table.');
+
+    assert(size(E22, 2) == retainedElementCount, ...
+        'E22 is inconsistent with the retained element table.');
+
+    assert(size(X, 2) == retainedElementCount, ...
+        'X is inconsistent with the retained element table.');
+
+    assert(size(Y, 2) == retainedElementCount, ...
+        'Y is inconsistent with the retained element table.');
+
+    if ~isempty(E12)
+        assert(size(E12, 2) == retainedElementCount, ...
+            'E12 is inconsistent with the retained element table.');
+    end
+
+    expectedElementLabels = (1:retainedElementCount).';
+
+    assert(isequal(Elements(:, 1), expectedElementLabels), ...
+        'The retained elements were not renumbered correctly.');
+
+    %% Report result
+
+    numberRemoved = sum(invalidElement);
+
+    if numberRemoved > 0
+        answer = 'Y';
+
+        fprintf(['WhatNaN removed %d invalid elements and retained %d ', ...
+                 '%d-node elements.\n'], ...
+                 numberRemoved, retainedElementCount, ...
+                 numberOfElementNodes);
     else
-        LV1 = ones(size(LV1));
-        LV1(f(:, 2)) = 0;
-	end
-	fprintf('\nOutliers percentage is %1.2f (> 0.1 allowed). I will now trim them out\n',...
-        length(f)/length(E11)*100);
-	E11(:,LV1==0) = []; 		E22(:,LV1==0) = []; 
-	E12(:,LV1==0) = []; 		X(:,LV1==0) = []; 
-	Y(:,LV1==0) = [];			Elements = Elements';   
-	Elements(:,LV1==0) = [];    Elements = Elements';  
-    E11(isnan(E11)) = 0;        E22(isnan(E22)) = 0;        E12(isnan(E12)) = 0;
-	answer = 'Y';
-else
-    answer = 'N';
-    E11(isnan(E11)) = 0;        E22(isnan(E22)) = 0;        E12(isnan(E12)) = 0;
-end
-% fill(X,Y,'w'); axis image; fill(X,Y,E12,'LineStyle','none'); axis image; shg
+        answer = 'N';
+
+        fprintf(['WhatNaN found no invalid elements. Retained %d ', ...
+                 '%d-node elements.\n'], ...
+                 retainedElementCount, numberOfElementNodes);
+    end
 end
 
-function [LV1] = RemoveOutNaN(tmp)
-tmp(tmp==0) = NaN;    
-mdn = median(tmp(:), 'omitnan');
-tmp(isnan(tmp)) = mdn;
-LV1 = isoutlier(tmp,'median',2); 
-LV1 = max(LV1);
+
+function validateElementArray( ...
+    array, numberOfElements, numberOfElementNodes, arrayName)
+% VALIDATEELEMENTARRAY
+% Checks that an element-associated array has one column per element and
+% one row per local element node.
+
+    if isempty(array)
+        error('%s is empty.', arrayName);
+    end
+
+    if size(array, 2) ~= numberOfElements
+        error(['%s has %d columns, but Elements contains %d rows. ', ...
+               'There must be one column per element.'], ...
+               arrayName, size(array, 2), numberOfElements);
+    end
+
+    if size(array, 1) ~= numberOfElementNodes
+        error(['%s has %d rows, but the element connectivity contains ', ...
+               '%d nodes per element.'], ...
+               arrayName, size(array, 1), numberOfElementNodes);
+    end
 end
