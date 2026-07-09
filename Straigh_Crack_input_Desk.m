@@ -37,7 +37,7 @@ Maps.nu    = 0.00;         Maps.E  = 000E9; %for non-cubic materials
   %}
 %% %%%%%%%%%%%%%%%%%%%%%%% END of USER INTERFACE %%%%%%%%%%%%%%%%%%%%%%%%
 Data = importdata(DataDirect);
-[~,RawData ] = reshapeData(Data.data);
+[~,RawData ] = reshapeData(Data.data*Maps.pixel_size);
 
 % to remove rigid body movement for stereo DIC
 % [theta,RawData.Ux,RawData.Uy,RawData.Uz,rotCentre] = ...
