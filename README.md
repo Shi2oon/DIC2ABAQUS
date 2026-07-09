@@ -42,6 +42,7 @@ Use this repository when you need to:
 <p align="center">
   <sub>Workflow figure from Koko and Marrow, SoftwareX, 2025, CC BY 4.0.</sub>
 </p>
+
 ---
 
 ## Repository structure
