@@ -153,10 +153,14 @@ set(gcf,'position',[98 311 1481 667])
 text(1:length(OutJ),OutJ,string([1:length(OutJ)]))
 pause(0.1)
 if ~exist("pp","var")
-oh = input('where to cut the contour? ');  
+    oh = input('where to cut the contour? ');
 else
-    oh =pp;
-end        
+    if pp == 1 || pp==99
+        oh = input('where to cut the contour? ');
+    else
+        oh =pp;
+    end
+end      
 OutJ=OutJ(1:oh);KI=KI(1:oh);KII=KII(1:oh);JK=JK(1:oh);
 close
 if ~isempty(Der_Deg)
