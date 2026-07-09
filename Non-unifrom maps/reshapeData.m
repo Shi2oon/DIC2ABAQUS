@@ -18,27 +18,35 @@ function [ alldata,dataum ] = reshapeData( raw_data )
 %         alldata = [dataum.X1(:) dataum.Y1(:) dataum.Z1(:) dataum.Ux(:) dataum.Uy(:) dataum.Uz(:)];
 %     end
 % catch
-    
-    x  = raw_data(:,1);
-    y  = raw_data(:,2);
-    ux = raw_data(:,3);
-    uy = raw_data(:,4);
-    
-    xVec = unique(x);
-    yVec = unique(y);
+
+x  = raw_data(:,1);
+y  = raw_data(:,2);
+ux = raw_data(:,3);
+uy = raw_data(:,4);
+
+xVec = unique(x);
+yVec = unique(y);
+
+try
+    xMap= reshape(x,numel(xVec),numel(yVec));
+    yMap= reshape(y,numel(xVec),numel(yVec));
+    uxMap= reshape(ux,numel(xVec),numel(yVec));
+    uyMap= reshape(uy,numel(xVec),numel(yVec));
+catch
+    disp('Reshape did not work')
     
     % nDataPoints = length(x);
     % if length(xVec) <	length(raw_data(:,1))*0.5
-    
+
     %Define grid
     [xMap,yMap] = meshgrid(xVec,yVec);
     [nRows, nCols] = size(xMap);
-    
+
     % nGridPoints = length(xMap(:));
-    
+
     uxMap = NaN(nRows, nCols); %Initialise
     uyMap = NaN(nRows, nCols); %Initialise
-    
+
     if size(raw_data,2) == 6
         z  = raw_data(:,3);
         zVec = unique(z);
@@ -51,10 +59,10 @@ function [ alldata,dataum ] = reshapeData( raw_data )
         uyMap = NaN(nRows, nCols, nDep); %Initialise
         uzMap = NaN(nRows, nCols, nDep); %Initialise
     end
-    
+
     for iRow = 1:nRows % loop rows
         for iCol = 1:nCols % loop cols
-            
+
             if size(raw_data,2) == 6 %% 3D
                 for iDep = 1:nDep
                     xt = xMap(iRow,iCol,iDep);
@@ -70,7 +78,7 @@ function [ alldata,dataum ] = reshapeData( raw_data )
                         uzMap(iRow,iCol,iDep) = uzt;
                     end
                 end
-                
+
             else %% 2D
                 xt = xMap(iRow,iCol);
                 yt = yMap(iRow,iCol);
@@ -84,16 +92,16 @@ function [ alldata,dataum ] = reshapeData( raw_data )
             end
         end
     end
-    
-    dataum.X1 = xMap;
-    dataum.Y1 = yMap;
-    % dataum.Uy = uyMap;
-    % dataum.Ux = uxMap;
-    % threshold = 0.95;
-    % [ uxMap ] = dispFieldSmoothing( uxMap, threshold );
-    dataum.Ux = uxMap;
-    % [ uyMap ] = dispFieldSmoothing( uyMap, threshold );
-    dataum.Uy = uyMap;
+end
+dataum.X1 = xMap;
+dataum.Y1 = yMap;
+% dataum.Uy = uyMap;
+% dataum.Ux = uxMap;
+% threshold = 0.95;
+% [ uxMap ] = dispFieldSmoothing( uxMap, threshold );
+dataum.Ux = uxMap;
+% [ uyMap ] = dispFieldSmoothing( uyMap, threshold );
+dataum.Uy = uyMap;
 
 alldata = [dataum.X1(:) dataum.Y1(:) dataum.Ux(:) dataum.Uy(:)];
 if size(raw_data,2) == 6
@@ -118,5 +126,5 @@ else
 	% scatter3(x(:),y(:),Ux,[],Ux); view([0 90])
 end
 %}
-
+end
 

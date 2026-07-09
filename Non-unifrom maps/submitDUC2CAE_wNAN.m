@@ -1,4 +1,4 @@
-function submitDUC2CAE_wNAN(fileID,folder,Unique)
+function submitDUC2CAE_wNAN(fileID,folder,Unique,Type,MatP)
 fprintf(fileID,'from part import * \n');
 fprintf(fileID,'from material import * \n');
 fprintf(fileID,'from section import * \n');
@@ -25,8 +25,20 @@ fprintf(fileID,'    explicitPrecision=SINGLE, getMemoryFromAnalysis=True, histor
 fprintf(fileID,'    memory=90, memoryUnits=PERCENTAGE, model="%s", modelPrint=OFF,  \n', Unique);
 fprintf(fileID,'    multiprocessingMode=DEFAULT, name="Job-%s", nodalOutputPrecision=SINGLE,  \n', Unique);
 fprintf(fileID,'    numCpus=1, numGPUs=0, queue=None, resultsFormat=ODB, scratch="", type= \n');
-fprintf(fileID,'    ANALYSIS, userSubroutine="", waitHours=0, waitMinutes=0) \n');
+if Type == 'U'
+    [~, name, ~] = fileparts(MatP.UMATfilepath);
+    umatFileName = [name, '.for'];
+    fprintf(fileID,'    ANALYSIS, userSubroutine="%s", waitHours=0, waitMinutes=0) \n', umatFileName);
+else
+    fprintf(fileID,'    ANALYSIS, userSubroutine="", waitHours=0, waitMinutes=0) \n');
+end
+% if Type == 'U' % if umat. ifort must be called before running the job
+%     fprintf(fileID,'mdb.jobs["Job-%s"].writeInput(consistencyChecking=OFF) \n', Unique);
+% else
+%     fprintf(fileID,'mdb.jobs["Job-%s"].submit(consistencyChecking=OFF) \n', Unique);
+% end
 fprintf(fileID,'mdb.jobs["Job-%s"].submit(consistencyChecking=OFF) \n', Unique);
+
 % wait for the job to be complete
 % fprintf(fileID,'mdb.jobs["%s"].waitForCompletion(); \n',Unique);
 % % read output database to retrieve the J-integral values

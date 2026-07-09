@@ -8,7 +8,7 @@ ft = fittype( ['x+a*x*(x/' num2str(yield) ')^(n-1)'], 'independent', 'x', 'depen
 opts = fitoptions( 'Method', 'NonlinearLeastSquares' );
 opts.Display = 'Off';
 opts.Lower = [-Inf 1];
-% opts.StartPoint = [0.390937802323736 0.399257770613576];
+opts.StartPoint = [0.390937802323736 0.399257770613576];
 
 % Fit model to data.
 [fitresult, gof] = fit( xData, yData, ft, opts );
