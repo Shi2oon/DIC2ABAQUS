@@ -37,7 +37,7 @@ Maps.Stiffness = [  283  121  121   0   0   0
                     0    0    0     0   81  0
                     0    0    0     0   0   81]*1e9;
 Maps.nu    = 0.30;         
-Maps.E  = 210E9; for non-cubic materials
+Maps.E  = 210E9; %for non-cubic materials
 %}
 tic
 % DIC2CAE_wNAN(MatP, Crack, resultsDir,angle_deg)

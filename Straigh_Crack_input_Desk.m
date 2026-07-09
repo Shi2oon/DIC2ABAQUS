@@ -20,20 +20,21 @@ Maps.Mat 	  = 'Ferrite'; %Material Name
 % 'E' for Elastic material
 % Poisson's ratio,          Young's Modulus [Pa],      		    
   Maps.nu    = 0.3;         Maps.E  = 220E9;            Maps.type  = 'E'; 
+  %{
 % if 'Ramberg-Osgood' type of material input            Yield Stress [Pa] 
-% Maps.Exponent = 26.67;      Maps.Yield_offset = 1.24; Maps.yield = 4E9;
-% Maps.type  = 'R';           
-% Maps.E  = 193E9;            Maps.nu    = 0.3;
+Maps.Exponent = 26.67;      Maps.Yield_offset = 1.24; Maps.yield = 4E9;
+Maps.type  = 'R';           
+Maps.E  = 193E9;            Maps.nu    = 0.3;
 % if 'Elastic-Anisotropic' you need to define the stifness tensor 
-% Maps.type  = 'A'; 
-% Maps.Stiffness = [  283  121  121   0   0   0
-%                     121  283  121   0   0   0
-%                     121  121  283   0   0   0
-%                     0    0    0     81  0   0
-%                     0    0    0     0   81  0
-%                     0    0    0     0   0   81]*1e9;
-% Maps.nu    = 0.00;         Maps.E  = 000E9; for non-cubic materials
-
+Maps.type  = 'A'; 
+Maps.Stiffness = [  283  121  121   0   0   0
+                    121  283  121   0   0   0
+                    121  121  283   0   0   0
+                    0    0    0     81  0   0
+                    0    0    0     0   81  0
+                    0    0    0     0   0   81]*1e9;
+Maps.nu    = 0.00;         Maps.E  = 000E9; %for non-cubic materials
+  %}
 %% %%%%%%%%%%%%%%%%%%%%%%% END of USER INTERFACE %%%%%%%%%%%%%%%%%%%%%%%%
 Data = importdata(DataDirect);
 [~,RawData ] = reshapeData(Data.data);
