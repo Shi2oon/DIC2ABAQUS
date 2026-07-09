@@ -155,7 +155,7 @@ pause(0.1)
 if ~exist("pp","var")
     oh = input('where to cut the contour? ');
 else
-    if pp == 1 || pp==99
+    if pp == 0 || pp == 1 || pp==99 || pp>length(OutJ)
         oh = input('where to cut the contour? ');
     else
         oh =pp;
