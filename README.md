@@ -33,7 +33,7 @@ Use this repository when you need to:
 
 ---
 
-## Workflow
+## Workflow (excluding the UMAT)
 
 <p align="center">
   <img src="Data/Assets/1-s2.0-S2352711025001980-gr1_lrg.jpg" width="1000" alt="DIC2Abaqus workflow from DIC data to Abaqus J and K post-processing">
@@ -42,70 +42,6 @@ Use this repository when you need to:
 <p align="center">
   <sub>Workflow figure from Koko and Marrow, SoftwareX, 2025, CC BY 4.0.</sub>
 </p>
-
-```mermaid
-flowchart LR
-    A[DIC or stereo-DIC field] --> B[User input]
-
-    A1[Units] --> B
-    A2[Pixel size] --> B
-    A3[Material model] --> B
-    A4[Stress state] --> B
-
-    B --> C[Import displacement data]
-    C --> D[Grid and regularise field]
-    D --> E[Define or omit crack region]
-
-    B -. optional .-> P1[Crop field]
-    B -. optional .-> P2[Remove rigid-body motion]
-    C -. optional .-> P3[Rotate field]
-    D -. optional .-> P4[Fill missing data]
-
-    E --> F[Define crack tip and direction]
-    F --> G[Generate Abaqus input]
-    G --> H[Run Abaqus]
-    H --> I[Calculate J and K]
-    I --> J[Correct crack direction if needed]
-    J --> K[Read Abaqus output]
-    K --> L[Plot J, KI, KII and KIII]
-    L --> M[Save figures and MATLAB results]
-```
-
----
-
-## Example applications
-
-<table>
-<tr>
-<td width="50%" align="center">
-<img src="Data/Assets/1-s2.0-S2352711025001980-gr7_lrg.jpg" alt="Arcan mixed-mode test setup and DIC displacement field" width="100%">
-<br>
-<sub><strong>Mixed-mode experiment:</strong> Arcan rig, stereo-DIC cameras, specimen region and measured displacement field.</sub>
-</td>
-<td width="50%" align="center">
-<img src="Data/Assets/1-s2.0-S2352711025001980-gr6_lrg.jpg" alt="Microstructural crack DIC field and J and K convergence plot" width="100%">
-<br>
-<sub><strong>Local crack analysis:</strong> microstructural crack image, displacement map and converged contour-integral outputs.</sub>
-</td>
-</tr>
-<tr>
-<td width="50%" align="center">
-<img src="Data/Assets/1-s2.0-S2352711025001980-gr2_lrg.jpg" alt="Interactive crack tip and crack mask selection in DIC2Abaqus" width="100%">
-<br>
-<sub><strong>Crack definition:</strong> interactive crack-tip and crack-mask selection before Abaqus model generation.</sub>
-</td>
-<td width="50%" align="center">
-<img src="Data/Assets/1-s2.0-S2352711025001980-gr3_lrg.jpg" alt="Abaqus finite element model and domain-integral region generated from DIC data" width="100%">
-<br>
-<sub><strong>Abaqus model:</strong> FE mesh, displacement boundary region and virtual crack-extension direction.</sub>
-</td>
-</tr>
-</table>
-
-<p align="center">
-  <sub>Application figures from Koko and Marrow, SoftwareX, 2025, CC BY 4.0. Captions have been shortened for the README.</sub>
-</p>
-
 ---
 
 ## Repository structure
