@@ -36,7 +36,7 @@ Maps.Mat 	  = 'Ferrite'; %Material Name
 
 %% %%%%%%%%%%%%%%%%%%%%%%% END of USER INTERFACE %%%%%%%%%%%%%%%%%%%%%%%%
 Data = importdata(DataDirect);
-[~,RawData ] = reshapeData(Data.data);
+[~,RawData ] = reshapeData(Data.data*Maps.pixel_size);
 
 % to remove rigid body movement for stereo DIC
 % [theta,RawData.Ux,RawData.Uy,RawData.Uz,rotCentre] = ...
