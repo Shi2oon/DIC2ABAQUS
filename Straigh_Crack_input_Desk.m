@@ -6,7 +6,7 @@
 clc;clear;close all
 addpath(genpath([pwd '\Functions']));
 addpath(genpath([pwd '\Miscellaneous']));
-DataDirect = fullfile(pwd,'\Miscellaneous\1KI-2KII-3KIII_Data.dat'); % file location
+DataDirect = fullfile(pwd,'\Data\1KI-2KII-3KIII_Data.dat'); % file location
 Maps.results = erase(DataDirect,'.dat');
 % Domain size (square, crack tip at centre).
 Maps.input_unit     = 'mm';            % meter (m) or milmeter (mm) or micrometer(um);

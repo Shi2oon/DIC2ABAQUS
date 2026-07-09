@@ -8,7 +8,7 @@
 clc;clear;close all
 addpath(genpath([pwd '\Non-uniform maps']));
 addpath(genpath([pwd '\Miscellaneous']));
-resultsDir = fullfile(pwd, 'Miscellaneous','Tortuous_Crack_Data.dat');  % file location
+resultsDir = fullfile(pwd, 'Data','Tortuous_Crack_Data.dat');  % file location
 Maps.input_unit     = 'um';         % meter (m) or milmeter (mm) or micrometer(um);
 Maps.pixel_size   = 1e-3;           % if DIC values are in pixel, 1 if in physical units;
 Maps.Operation    = 'DIC';          % Strain, xED = xEBSD, DIC = Displacement
@@ -103,7 +103,7 @@ saveas(gcf, [Maps.results '\' Maps.unique '_J_KI_II.tif']);    close all
 save([Maps.results '\' Maps.unique '_DIC2CAE.mat'],'Maps','J','KI','KII',...
     'K','Direction');
 
-%% changing the crack direction
+%% changing the crack direction (optional)
 load([Maps.results '\' Maps.unique '_DIC2CAE.mat'],'MatP','Direction');
 fprintf('\nRecommended virtual crack extension for max. J-integral direction is %.1f ± %.1f\t\n',...
     round(Direction.true,1), round(Direction.div,1))
