@@ -97,8 +97,6 @@ Maps.X  = RawData.X1;       Maps.Y = RawData.Y1;
 Maps.Ux = RawData.Ux;       Maps.Uy = RawData.Uy;
 try %stereo
 	Maps.Z = RawData.Z1;      Maps.Uz = RawData.Uz;
-catch %2D
-	.Z = RawData.X1*0;      Maps.Uz = RawData.Uy*0;
 end
 
 % [data] = Cropping10(Maps.X,Maps.Y,Maps.Ux, Maps.Uy);
