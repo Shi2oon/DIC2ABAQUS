@@ -1,12 +1,17 @@
-# DIC2ABAQUS
+<p align="center">
+  <h1 align="center">DIC2ABAQUS</h1>
+  <p align="center">
+    <strong>From experimental DIC displacement fields to Abaqus fracture mechanics models.</strong><br>
+    Compute <em>J</em>-integrals and mixed-mode stress-intensity factors from 2D and 3D-stereo DIC data, including straight, tortuous, isotropic, anisotropic, elastoplastic, and UMAT-driven workflows.
+  </p>
+</p>
 
-**Experimental DIC displacement fields to Abaqus fracture-integral analysis**
-
-[![MATLAB](https://img.shields.io/badge/MATLAB-DIC%20processing-orange?style=for-the-badge&logo=mathworks)](#requirements)
-[![Abaqus](https://img.shields.io/badge/Abaqus-domain%20integrals-blue?style=for-the-badge)](#requirements)
-[![Fortran](https://img.shields.io/badge/Fortran-UMAT%20support-purple?style=for-the-badge&logo=fortran)](#umat-and-oxford-umat)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![SoftwareX](https://img.shields.io/badge/SoftwareX-DIC2Abaqus-lightgrey?style=for-the-badge)](https://doi.org/10.1016/j.softx.2025.102231)
+<p align="center">
+  <a href="https://github.com/Shi2oon/DIC2ABAQUS"><img src="https://img.shields.io/badge/platform-MATLAB%20%2B%20Abaqus-blue" alt="MATLAB and Abaqus"></a>
+  <a href="https://github.com/Shi2oon/DIC2ABAQUS/blob/master/LICENSE"><img src="https://img.shields.io/badge/licence-MIT-green" alt="MIT licence"></a>
+  <a href="https://doi.org/10.1016/j.softx.2025.102231"><img src="https://img.shields.io/badge/SoftwareX-10.1016%2Fj.softx.2025.102231-orange" alt="SoftwareX DOI"></a>
+  <a href="https://github.com/TarletonGroup/CrystalPlasticity"><img src="https://img.shields.io/badge/UMAT-OXFORD--UMAT-purple" alt="OXFORD-UMAT"></a>
+</p>
 
 **DIC2ABAQUS** converts 2D and stereo-DIC displacement fields into Abaqus-ready finite element models for fracture analysis. It is designed for cases where a measured displacement field, rather than an idealised specimen solution, should drive the mechanical analysis.
 
