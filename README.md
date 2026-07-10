@@ -13,12 +13,6 @@
   <a href="https://github.com/TarletonGroup/CrystalPlasticity"><img src="https://img.shields.io/badge/UMAT-OXFORD--UMAT-purple" alt="OXFORD-UMAT"></a>
 </p>
 
-**DIC2ABAQUS** converts 2D and stereo-DIC displacement fields into Abaqus-ready finite element models for fracture analysis. It is designed for cases where a measured displacement field, rather than an idealised specimen solution, should drive the mechanical analysis.
-
-**Main outputs:** Abaqus model files, $J$, $K_I$, $K_{II}$, optional $K_{III}$, convergence plots, corrected crack-direction results, and MATLAB output files.
-
-**Supported material routes:** isotropic elasticity, Ramberg-Osgood plasticity, anisotropic elasticity with EBSD/MTEX information, and user-defined Abaqus material behaviour through UMAT.
-
 ---
 
 ## Why use DIC2ABAQUS?
