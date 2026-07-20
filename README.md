@@ -107,7 +107,7 @@ The repository keeps the original spellings `Straigh_Crack_input_Desk.m` and `No
 ### Additional requirements for EBSD workflows
 
 - MTEX installed and available in MATLAB
-- EBSD data registered to the DIC coordinate system, or enough information to perform registration
+- EBSD data registered to the DIC coordinate system, or enough information to perform registration. You can use [SEM-DIC-EBSD code](https://github.com/Shi2oon/SEM-DIC-EBSD) 
 
 ---
 
